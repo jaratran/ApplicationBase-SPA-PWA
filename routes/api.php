@@ -10,8 +10,8 @@ use App\Http\Controllers\Api\Auth\LoginController;
 // Login público
 Route::post('/login', [LoginController::class, 'login']);
 
-// Rutas protegidas por Sanctum
-Route::middleware('auth:sanctum')->group(function () {
+// Rutas protegidas por Sanctum y el nuevo middleware (para manejar LogOut sin LogIn)
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [LoginController::class, 'user']);
     Route::post('/logout', [LoginController::class, 'logout']);
 });
