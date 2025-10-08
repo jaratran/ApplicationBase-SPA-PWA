@@ -2,23 +2,31 @@ import axios from 'axios'
 
 // Configuración global de Axios para Sanctum
 const api = axios.create({
-    baseURL: 'https://calidad.hp-notebook.cl', // tu backend Laravel
-    withCredentials: true, // 🔹 necesario para cookies Sanctum
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-    }
+  baseURL: 'https://calidad.hp-notebook.cl', // Backend Laravel
+  withCredentials: true, // 🔹 Necesario para cookies de sesión Sanctum
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
 })
 
 // Interceptor: captura respuestas 401 y lanza evento global
 api.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response && error.response.status === 401) {
-            window.dispatchEvent(new CustomEvent('unauthorized'))
-        }
-        return Promise.reject(error)
+  response => response,
+  error => {
+    if (error.response) {
+      if (error.response.status === 401) {
+        console.warn('⚠️ Sesión expirada o no autorizada (401).')
+        window.dispatchEvent(new CustomEvent('unauthorized'))
+      } else {
+        console.error(`❌ Error HTTP ${error.response.status}:`, error.response.data)
+      }
+    } else {
+      console.error('❌ Error de red o sin respuesta del servidor:', error)
     }
+
+    return Promise.reject(error)
+  }
 )
 
 export default api
