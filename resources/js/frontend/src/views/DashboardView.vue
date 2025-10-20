@@ -29,6 +29,7 @@ const logout = async () => {
   text-align: center;
   margin-top: 100px;
 }
+
 button {
   padding: 0.7rem 1.5rem;
   background-color: #ef4444;
