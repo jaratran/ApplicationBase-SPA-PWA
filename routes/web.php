@@ -13,3 +13,13 @@ Route::get('/{any}', function () {
 
 // Linea para usar cuando la aplicación creazca o si más adelante agregamos Debugbar o Telescope.
 //})->where('any', '^(?!api|storage|telescope|_debugbar).*$');
+
+
+// === MÓDULOS PRINCIPALES DEL SISTEMA ==========================================
+Route::middleware(['auth'])->group(function () {
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    // PANEL DE CONTROL - DASHBOARD
+    // Esto es para todos los usuarios
+    Route::get('panel', [PanelController::class, 'index']);
+});

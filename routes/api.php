@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\DesignParameterController;
+use App\Http\Controllers\Api\PanelController;
 
 // =============================
 //  API de Autenticación Sanctum
@@ -17,4 +18,6 @@ Route::get('/design-parameters', [DesignParameterController::class, 'index']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [LoginController::class, 'user']);
     Route::post('/logout', [LoginController::class, 'logout']);
+
+    Route::get('/panel/datos', [PanelController::class, 'datos']);
 });

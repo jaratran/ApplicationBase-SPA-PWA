@@ -13,4 +13,9 @@ return [
         'not_found'                 => 'No existen parámetros de diseño definidos en la base de datos.',
     ],
 
+    'panel' => [
+        'load_success'  => 'Panel de control cargado correctamente.',
+        'load_error'    => 'Ocurrió un error al obtener los datos del panel de control.',
+    ],
+
 ];
