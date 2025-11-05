@@ -14,8 +14,10 @@
 
         <!-- Fuente Roboto, igual que EcoRuta -->
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
         @vite([
+            'resources/css/bootstrap-sim.css',
             'resources/css/app.css',
             'resources/js/frontend/main.js'
         ])

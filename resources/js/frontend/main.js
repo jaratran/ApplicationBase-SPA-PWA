@@ -1,12 +1,11 @@
 import { createApp } from 'vue'
 
-import { createPinia } from 'pinia'                                                 // manejo de estado
-import router from './src/router'                                                   // navegación
-import App from './src/App.vue'                                                     // App principal
-
 import axios from 'axios'                                                           // AXIOS
+import { createPinia } from 'pinia'                                                 // manejo de estado
+import router from './src/router'                                                   // navegación front para PWA
 
 import { applyDesignParameters } from './src/utils/applyDesignParameters'           // consulta tu API para obtener parámetros de diseño
+import App from './src/App.vue'                                                     // Monta App principal
 
 import '@fortawesome/fontawesome-free/css/all.min.css'                              // Font Awesome (para el ojo)
 
