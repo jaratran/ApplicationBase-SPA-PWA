@@ -17,8 +17,10 @@ class PanelController extends Controller
     public function datos(Request $request)
     {
         try {
-            $hoy = config('app.env') === 'local' && env('DASHBOARD_FECHA_FIJA')
-                    ? env('DASHBOARD_FECHA_FIJA')
+            $fechaFija = config('app.env_debug.dashboard_fecha_fija');
+
+            $hoy = config('app.env') === 'local' && $fechaFija
+                    ? $fechaFija
                     : now()->toDateString();
 
             $detallesPorVersion = ProgramaDiario::detallesPorFechaYVersion($hoy, config('constantes.VERSION_ULTIMA'));

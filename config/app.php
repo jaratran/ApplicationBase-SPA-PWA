@@ -123,4 +123,13 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Configuraciones personalizadas del sistema
+    |--------------------------------------------------------------------------
+    */
+    'env_debug' => [
+        'dashboard_fecha_fija' => env('DASHBOARD_FECHA_FIJA'),
+    ],
+
 ];
