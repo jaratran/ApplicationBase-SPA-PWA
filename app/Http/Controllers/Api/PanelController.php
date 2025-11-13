@@ -17,8 +17,9 @@ class PanelController extends Controller
     public function datos(Request $request)
     {
         try {
-            $hoy = now()->format('Y-m-d');
-            $hoy = '2025-07-23'; // Fecha donde sabes que hay programas emitidos            
+            $hoy = config('app.env') === 'local' && env('DASHBOARD_FECHA_FIJA')
+                    ? env('DASHBOARD_FECHA_FIJA')
+                    : now()->toDateString();
 
             $detallesPorVersion = ProgramaDiario::detallesPorFechaYVersion($hoy, config('constantes.VERSION_ULTIMA'));
             $ultimaVersion      = array_key_first($detallesPorVersion);

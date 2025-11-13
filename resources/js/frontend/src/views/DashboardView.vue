@@ -142,8 +142,6 @@
 </template>
 
 <script setup>
-import '@/../css/bootstrap-sim.css';
-
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
