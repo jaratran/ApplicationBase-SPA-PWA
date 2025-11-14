@@ -22,3 +22,8 @@ body {
     font-weight: 400;    /* sin énfasis extra */
   }
 }
+
+main {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}

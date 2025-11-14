@@ -1,5 +1,7 @@
+<!-- resources/js/frontend/src/views/DashboardView.vue -->
+
 <template>
-  <div class="container py-4">
+  <div class="container">
     <!-- 🧭 Título principal -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white fs-5">

@@ -1,3 +1,4 @@
+// resources/js/frontend/main.js
 import { createApp } from 'vue'
 
 import axios from 'axios'                                                           // AXIOS

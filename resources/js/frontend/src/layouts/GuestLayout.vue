@@ -9,11 +9,16 @@
 
   <!-- Layout base: pantalla completa, fondo neutro, sin centrado forzado -->
   <div class="min-h-screen w-screen bg-white flex flex-col">
-    <router-view class="flex-1" />
+    <!-- <router-view class="flex-1" /> -->
+
+    <div class="flex-1">
+      <slot />
+    </div>
+
   </div>
 </template>
 
 <script setup>
-// No requiere lógica específica.
-// Mantiene la neutralidad del layout.
+  // No requiere lógica específica.
+  // Mantiene la neutralidad del layout.
 </script>

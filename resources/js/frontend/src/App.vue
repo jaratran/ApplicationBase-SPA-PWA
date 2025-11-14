@@ -1,7 +1,22 @@
+<!-- resources/js/frontend/src/App.vue -->
 <template>
-    <router-view />
+    <component :is="layoutComponent">
+        <router-view />
+    </component>
 </template>
 
 <script setup>
-// Mantiene simple: el router gestiona todo
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+import GuestLayout from './layouts/GuestLayout.vue'
+import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue'
+
+const route = useRoute()
+
+const layoutComponent = computed(() => {
+    return route.meta.requiresAuth
+        ? AuthenticatedLayout
+        : GuestLayout
+})
 </script>

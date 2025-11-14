@@ -1,8 +1,8 @@
+// resources/js/frontend/src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'                           // Usa el Pinia store para autenticar
 
 // 🧩 Importar vistas y layouts
-import GuestLayout from '../layouts/GuestLayout.vue'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 
@@ -10,17 +10,12 @@ import DashboardView from '../views/DashboardView.vue'
 const routes = [
   { path: '/', redirect: '/login' },
 
-  // 🧱 Login envuelto en GuestLayout
+  // 🧱 Login (NO requiere autenticación)
   {
     path: '/login',
-    component: GuestLayout, // Envolvente visual (logo + fondo)
-    children: [
-      {
-        path: '',
-        name: 'login',
-        component: LoginView, // Contenido dentro del layout
-      },
-    ],
+    name: 'login',
+    component: LoginView,
+    meta: { requiresAuth: false },
   },
 
   // 🧭 Dashboard (requiere autenticación)
