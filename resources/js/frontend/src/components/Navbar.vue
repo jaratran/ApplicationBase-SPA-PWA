@@ -19,11 +19,17 @@
 
         <!-- DERECHA: Avatar + Dropdown -->
         <div class="relative" ref="menuRef">
-            <button @click="toggleMenu"
-                class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center hover:ring-2 hover:ring-gray-300">
-                <i class="fas fa-user text-gray-600"></i>
+            <button @click="toggleMenu" class="flex items-center gap-1 p-0 bg-transparent border-0 outline-none">
+
+                <!-- FOTO DEL USUARIO -->
+                <img :src="avatarUrl" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-300" />
+
+                <!-- TRIÁNGULO ▼ -->
+                <i class="fas fa-caret-down text-gray-700 text-sm transition-transform duration-150"
+                    :class="{ 'rotate-180': menuOpen }"></i>
             </button>
 
+            <!-- Dropdown -->
             <transition name="fade">
                 <div v-if="menuOpen"
                     class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 py-1 z-50">
@@ -97,6 +103,18 @@
         // Fallback si no existe todavía
         return '/images/default-logo.png'
     })
+
+    const avatarUrl = computed(() => {
+        const u = auth.user
+
+        if (!u) return 'uploads/avatar/default_small.jpg'
+
+        if (u.avatar) {
+            return `uploads/avatar/${u.avatar}_small.jpg`
+        }
+
+        return 'uploads/avatar/default_small.jpg'
+    })
 </script>
 
 <style scoped>
@@ -130,5 +148,13 @@
     .fade-enter-from,
     .fade-leave-to {
         opacity: 0;
+    }
+
+    .fas.fa-caret-down {
+        transition: transform 0.15s ease;
+    }
+
+    .rotate-180 {
+        transform: rotate(180deg);
     }
 </style>
