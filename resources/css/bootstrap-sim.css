@@ -1,5 +1,29 @@
 /* === Bootstrap Simulation Layer === */
 
+/* LAYOUT DE 12 COLUMNAS - ESTILO GRILLA DE BOOTSTRAP */
+.row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.25rem;
+}
+/* Simula responsividad Bootstrap : Pantallas pequeñas ancho completo. Otras Pantallas aplica .col-md-4 y .col-md-8 */
+.col-md-4 {
+    grid-column: span 12;
+}
+
+.col-md-8 {
+    grid-column: span 12;
+}
+@media (min-width: 768px) {
+    .col-md-4 {
+        grid-column: span 4;
+    }
+
+    .col-md-8 {
+        grid-column: span 8;
+    }
+}
+
 /* 🧱 CONTAINER */
 .container {
     max-width: 1400px;
@@ -24,18 +48,22 @@
 
 /* 🪶 CARDS */
 .card {
-    border: 1px solid #212529;
+    border: 1px solid #ccc;
     border-radius: 0.375rem;
     background-color: #fff;
 }
-
 .card-header {
     font-weight: 400;
     letter-spacing: 0.2px;
     padding: 0.65rem 1rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.175);
 }
-
+/* === Headers de cards primarias (Panel de Control, Consolidado y Programa Diario, Perfil) === */
+.card-header.fs-5 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    padding: 0.4rem 0.8rem;
+}
 .card-body {
     padding: 1rem 1.25rem;
 }
@@ -61,26 +89,73 @@
     color: #fff !important;
 }
 
+/* BOTONES */
+/* === Botones primary y secondary estilo Bootstrap 5 === */
+.btn-primary {
+    background-color: var(--bs-primary, #0d6efd) !important;
+    border: 1px solid var(--bs-primary, #0d6efd) !important;
+    color: #fff;
+    font-size: .95rem;
+    padding: .45rem .75rem;    /* ← Padding exacto de Bootstrap */
+    border-radius: .375rem;    /* ← Bordes redondeados Bootstrap */
+}
+.btn-primary:hover {
+    background-color: #fff !important;
+    border-color: var(--bs-primary, #0d6efd) !important;
+    color: var(--bs-primary, #0d6efd) !important;
+}
+.btn-secondary {
+    background-color: var(--bs-secondary, #6c757d) !important;
+    border: 1px solid var(--bs-secondary, #6c757d) !important;
+    color: #fff;
+    font-size: .95rem;
+    padding: .45rem .75rem;    /* ← Padding exacto de Bootstrap */
+    border-radius: .375rem;    /* ← Bordes redondeados Bootstrap */
+}
+.btn-secondary:hover {
+    background-color: #fff !important;
+    border-color: var(--bs-secondary, #6c757d) !important;
+    color: var(--bs-secondary, #6c757d) !important;
+}
+
+/* Configuraciones especificas de Botones */
+.btn-full {
+    width: 100%;
+}
+.btn i {
+    margin-right: 4px;
+}
+
+/* NOMBRE COMPLETO USUARIO PERFIL */
+h4 {
+    line-height: 1.2;
+    font-size: 1.5rem;
+    margin-bottom: .5rem;
+}
+
+/* TÍTULOS DE SECCIÓN (En Perfil : Datos Personales, Dirección) */
+.section-title {
+    font-weight: 300;
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+}
+
 /* 🧾 TABLES */
 .table {
     width: 100%;
-    border-collapse: collapse;
     font-size: 0.9rem;
     border-color: #dee2e6;
 }
-
 .table th,
 .table td {
-    padding: 0.45rem 0.6rem;
-    border: 1px solid #dee2e6;
+    padding: 0.55rem !important;
     vertical-align: middle;
+    border: 1px solid #dee2e6;
 }
-
 .table thead th {
-    background-color: #f0f0f0;
+    background-color: #fff;
     color: #333;
 }
-
-.table-bordered> :not(caption)>*>* {
-    border-width: 1px !important;
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #fafafa;
 }

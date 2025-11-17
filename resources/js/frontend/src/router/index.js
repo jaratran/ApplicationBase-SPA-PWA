@@ -6,6 +6,10 @@ import { useAuthStore } from '../stores/auth'                           // Usa e
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 
+import PerfilView from '../views/Perfil/PerfilView.vue'
+// import PerfilEditarView from '../views/Perfil/PerfilEditarView.vue'
+// import PerfilPasswordView from '../views/Perfil/PerfilPasswordView.vue'
+
 // 🗺️ Definición de rutas
 const routes = [
   { path: '/', redirect: '/login' },
@@ -25,6 +29,30 @@ const routes = [
     component: DashboardView,
     meta: { requiresAuth: true },
   },
+
+  // 👤 Show del Perfil del Usuario
+  {
+    path: '/perfil',
+    name: 'perfil',
+    component: PerfilView,
+    meta: { requiresAuth: true }
+  },
+
+  // // 👤 Edit del Perfil del Usuario
+  // {
+  //   path: '/perfil/editar',
+  //   name: 'perfil.editar',
+  //   component: PerfilEditarView,
+  //   meta: { requiresAuth: true }
+  // },
+
+  // // 👤 Cambio de Contraseña del Perfil del Usuario
+  // {
+  //   path: '/perfil/password',
+  //   name: 'perfil.password',
+  //   component: PerfilPasswordView,
+  //   meta: { requiresAuth: true }
+  // },
 
   // 🚧 Ruta comodín: redirige a login
   { path: '/:pathMatch(.*)*', redirect: '/login' },

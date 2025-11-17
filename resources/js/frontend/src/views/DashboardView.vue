@@ -181,37 +181,30 @@ onMounted(fetchPanelData);
 </script>
 
 <style scoped>
-/* === Headers de cards primarias (Panel de Control, Consolidado y Programa Diario) === */
-.card-header.fs-5 {
-  font-size: 1.25rem;
-  line-height: 1.4;
-}
+  /* === Headers de cards secundarias propias de DashBoard (Gráficos y KPIs) === */
+  .card-header:not(.fs-5) {
+    font-size: 0.9rem;  /* ~14px, sobrio */
+    font-weight: 400;  /* liviano, contrasta con el h2 grande */
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
 
-/* === Headers de cards secundarias (Gráficos y KPIs) === */
-.card-header.bg-primary:not(.fs-5),
-.card.bg-secondary .card-header, .card.bg-success .card-header, .card.bg-warning .card-header {
-  font-size: 0.9rem;  /* ~14px, sobrio */
-  font-weight: 400;  /* liviano, contrasta con el h2 grande */
-  letter-spacing: 0.3px;
-  line-height: 1.3;
-}
+  /* === Body de cards secundarias de KPIs === */
+  .card-body h2 {
+    font-size: 1.8rem;
+    font-weight: 400 !important;
+    margin: 0;
+  }
 
-/* === Body de cards secundarias (KPIs) === */
-.card-body h2 {
-  font-size: 1.8rem;
-  font-weight: 400 !important;
-  margin: 0;
-}
-
-/* Placeholder de gráficos */
-.placeholder-chart {
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8f9fa;
-  border: 1px dashed #ccc;
-  color: #999;
-  font-style: italic;
-}
+  /* === Placeholder de gráficos === */
+  .placeholder-chart {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px dashed #ccc;
+    color: #999;
+    font-style: italic;
+  }
 </style>

@@ -62,6 +62,17 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false
         router.push('/login')
       }
+    },
+
+    async fetchPerfil() {
+      try {
+        const { data } = await api.get('/api/perfil')
+        this.user = data.data
+        return this.user
+      } catch (error) {
+        console.error('Error cargando perfil:', error)
+        return null
+      }
     }
   }
 })
