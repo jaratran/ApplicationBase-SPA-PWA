@@ -2,8 +2,18 @@ import axios from 'axios'
 
 // Configuración global de Axios para Sanctum
 const api = axios.create({
-  baseURL: 'https://calidad.hp-notebook.cl', // Backend Laravel
+  baseURL: '/api',
   withCredentials: true, // 🔹 Necesario para cookies de sesión Sanctum
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+})
+
+// Configuración global de Axios para Sanctum y CSRF
+const sanctum = axios.create({
+  baseURL: '/sanctum',
+  withCredentials: true,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
@@ -30,3 +40,4 @@ api.interceptors.response.use(
 )
 
 export default api
+export { sanctum }

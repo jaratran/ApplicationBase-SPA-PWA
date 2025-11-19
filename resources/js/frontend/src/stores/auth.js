@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import api from '../services/api'
+import api, { sanctum } from '../services/api'
 import router from '../router'
 
 export const useAuthStore = defineStore('auth', {
@@ -12,7 +12,8 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async getCsrfCookie() {
       try {
-        await api.get('/sanctum/csrf-cookie')
+        await sanctum.get('/csrf-cookie')
+
       } catch (error) {
         console.error('Error obteniendo CSRF cookie:', error)
         throw error
@@ -25,11 +26,11 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         await this.getCsrfCookie()
-        const response = await api.post('/api/login', { email, password })
+        const response = await api.post('/login', { email, password })
 
         // ⚙️ Ajuste: algunos backends no retornan el usuario directamente
         // por eso siempre lo solicitamos explícitamente
-        const { data } = await api.get('/api/user')
+        const { data } = await api.get('/user')
         this.user = data
 
         router.push('/dashboard')
@@ -44,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUser() {
       try {
-        const response = await api.get('/api/user')
+        const response = await api.get('/user')
         this.user = response.data
       } catch {
         this.user = null
@@ -54,7 +55,7 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       this.loading = true
       try {
-        await api.post('/api/logout')
+        await api.post('/logout')
       } catch (error) {
         console.warn('Error al cerrar sesión (ignorado):', error)
       } finally {
@@ -66,7 +67,7 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchPerfil() {
       try {
-        const { data } = await api.get('/api/perfil')
+        const { data } = await api.get('/perfil')
         this.user = data.data
         return this.user
       } catch (error) {
