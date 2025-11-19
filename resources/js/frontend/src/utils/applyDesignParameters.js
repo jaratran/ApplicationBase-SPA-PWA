@@ -23,7 +23,7 @@ function hexToRgb(hex) {
 export async function applyDesignParameters() {
 
   try {
-    const response = await fetch('https://calidad.hp-notebook.cl/api/design-parameters');
+    const response = await fetch('/api/design-parameters');
     if (!response.ok) throw new Error('Error al obtener parámetros de diseño');
 
     const data = await response.json();
@@ -51,12 +51,31 @@ export async function applyDesignParameters() {
       document.documentElement.style.setProperty('--emblema-design', `url('/config/${data.emblema_design}')`);
     }
 
+    // ============================================================
+    // ⭐ NUEVO → Actualizar el título dinámicamente (como Blade)
+    // ============================================================
+    if (data.titulo_design) {
+      document.title = data.titulo_design;
+    }
+
+    // ============================================================
+    // ⭐ NUEVO → Reemplazar correctamente el FAVICON
+    // ============================================================
     if (data.favicon_design) {
-      // Nota: el favicon se actualiza también en el <link rel="icon">
       const faviconPath = `/config/${data.favicon_design}`;
+
+      // 1. Actualiza variable CSS (por compatibilidad con tu código actual)
       document.documentElement.style.setProperty('--favicon-design', `url('${faviconPath}')`);
-      const link = document.querySelector("link[rel~='icon']");
-      if (link) link.href = faviconPath;
+
+      // 2. Elimina todos los <link rel="icon"> existentes
+      const existingIcons = document.querySelectorAll("link[rel='icon'], link[rel='shortcut icon']");
+      existingIcons.forEach(link => link.parentNode.removeChild(link));
+
+      // 3. Crea uno nuevo idéntico a como lo hacía Blade
+      const newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+      newFavicon.href = faviconPath;
+      document.head.appendChild(newFavicon);
     }
 
     if (data.fondo_pantalla_design) {
