@@ -1,4 +1,4 @@
-// src/utils/applyDesignParameters.js
+// resources/js/frontend/src/utils/applyDesignParameters.js
 
 /**
  * Convierte un color HEX (#RRGGBB) a formato RGB (r,g,b)

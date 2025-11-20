@@ -1,3 +1,5 @@
+// resources/js/frontend/src/stores/auth.js
+
 import { defineStore } from 'pinia'
 import api, { sanctum } from '../services/api'
 import router from '../router'
