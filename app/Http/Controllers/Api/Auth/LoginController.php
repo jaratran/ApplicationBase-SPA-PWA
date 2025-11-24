@@ -19,20 +19,19 @@ class LoginController extends Controller
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Credenciales inválidas'], 401);
+            return response()
+					->json(['message' => 'Credenciales inválidas'], 401);
         }
 
         $request->session()->regenerate();
 
-        return response()->json([
-            'user' => Auth::user(),
-            'message' => 'Inicio de sesión exitoso',
-        ]);
+		return response()
+				->json(['message' => 'Inicio de sesión exitoso',]);
     }
 
     /**
      * Devuelve el usuario autenticado actual.
-     */    
+     */
     public function user(Request $request)
     {
         return response()->json($request->user());
@@ -40,7 +39,7 @@ class LoginController extends Controller
 
     /**
      * Cierra la sesión actual.
-     */    
+     */
     public function logout(Request $request)
     {
         Auth::guard('web')->logout();

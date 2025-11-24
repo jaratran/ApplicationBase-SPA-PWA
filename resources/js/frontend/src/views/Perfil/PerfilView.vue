@@ -161,11 +161,7 @@
     const fileInput = ref(null)
 
 const submitAvatar = async () => {
-	console.log('fileInput:', fileInput.value)
-	console.log('files:', fileInput.value?.files)
-
 	const file = fileInput.value?.files?.[0]
-	console.log('file:', file)
 
 	if (!file) {
 		alert('No se seleccionó archivo')
