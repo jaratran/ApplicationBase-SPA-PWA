@@ -39,7 +39,7 @@ class ProfileController extends Controller
 
         $user = User::find(Auth::id());
 
-        $this->procesaAvatar($request->file('avatar'), $user);
+        $this->procesarAvatar($request->file('avatar'), $user);
 
         return response()->json([
             'success' => true,

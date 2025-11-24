@@ -8,7 +8,7 @@ const api = axios.create({
   withCredentials: true, // 🔹 Necesario para cookies de sesión Sanctum
   headers: {
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    // ⚠️ NO definir Content-Type - 'Content-Type': 'application/json'
   }
 })
 
@@ -18,7 +18,7 @@ const sanctum = axios.create({
   withCredentials: true,
   headers: {
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    // ⚠️ NO definir Content-Type - 'Content-Type': 'application/json'
   }
 })
 
