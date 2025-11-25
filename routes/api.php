@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\DesignParameterController;
 use App\Http\Controllers\Api\PanelController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\Parametros\LocationController;
 
 // =============================
 //  API de Autenticación Sanctum
@@ -26,4 +27,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/perfil/avatar', [ProfileController::class, 'updateAvatar']);
     Route::post('/perfil/update', [ProfileController::class, 'updateData']);
     Route::post('/perfil/password', [ProfileController::class, 'updatePassword']);
+
+
+	Route::get('/regiones', [LocationController::class, 'obtenerRegion']);
+	Route::get('/regiones/{regionId}/comunas', [LocationController::class, 'obtenerComuna']);
 });

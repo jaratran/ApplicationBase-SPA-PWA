@@ -1,3 +1,5 @@
+<!-- resources/js/frontend/src/views/Perfil/PerfilView.vue -->
+
 <template>
 	<div class="container">
 		<div v-if="auth.perfil">
@@ -46,9 +48,19 @@
 						</div>
 
 						<div class="card-body">
+							<!-- 🔹 ALERTAS AL ESTILO EcoRuta -->
+							<div v-if="alert.message"
+								:class="{
+									'alert alert-success': alert.type === 'success',
+									'alert alert-danger': alert.type === 'error',
+									'alert alert-warning': alert.type === 'warning'
+								}"
+							>
+								{{ alert.message }}
+							</div>
 
 							<!-- Botones -->
-							<div class="flex gap-2 mb-3">
+							<div class=" flex gap-2 mb-3">
 								<button @click="goPassword" class="btn btn-secondary">
 									<i class="fa fa-key me-1"></i>
 									Actualizar Contraseña
@@ -131,14 +143,20 @@
 
 <script setup>
     import { ref, onMounted, computed } from 'vue'
+	import { useAlertStore } from '../../stores/alert'
+    import { useAuthStore } from '../../stores/auth'
     import api from '../../services/api'
     import { useRouter } from 'vue-router'
-    import { useAuthStore } from '../../stores/auth'
 
+	const alert = useAlertStore()
     const auth = useAuthStore()
     const router = useRouter()
 
 	onMounted(async () => {
+		// 0) Mostrar alert si es pendiente
+		alert.prepare()
+
+		// 1) Recuperar perfil
 		await auth.fetchPerfil()
 	})
 
@@ -160,21 +178,21 @@
     // Avatar upload
     const fileInput = ref(null)
 
-const submitAvatar = async () => {
-	const file = fileInput.value?.files?.[0]
+	const submitAvatar = async () => {
+		const file = fileInput.value?.files?.[0]
 
-	if (!file) {
-		alert('No se seleccionó archivo')
-		return
+		if (!file) {
+			alert('No se seleccionó archivo')
+			return
+		}
+
+		const form = new FormData()
+		form.append('avatar', file)
+
+		await api.post('/perfil/avatar', form)
+		await auth.fetchPerfil()
+		await auth.fetchUser()   // ← recarga el usuario global
 	}
-
-	const form = new FormData()
-	form.append('avatar', file)
-
-	await api.post('/perfil/avatar', form)
-	await auth.fetchPerfil()
-	await auth.fetchUser()   // ← recarga el usuario global
-}
 
     // Navegación
     const goEditar = () => router.push('/perfil/editar')

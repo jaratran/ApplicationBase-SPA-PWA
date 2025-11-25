@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
 
-        <!-- 
+        <!--
             user-scalable=no: bloquea zoom manual en móviles para mantener layout fijo (intencional, estilo app).
             Si se requiere accesibilidad, eliminar esta restricción.
         -->
@@ -16,14 +16,20 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
+		<!-- 🔹 Aquí cargamos los CSS con estilos de compatibilidad -->
         @vite([
             'resources/css/bootstrap-sim.css',
-            'resources/css/app.css',
-            'resources/js/frontend/main.js'
+            'resources/css/app.css'
         ])
     </head>
 
     <body class="antialiased">
         <div id="app"></div>
-    </body>
+
+		{{-- 🔹 Aquí inyectas las constantes desde PHP hacia JS (window.constantes) --}}
+		@include('includes.constantes-js')
+
+		{{-- 🔹 Y después cargas tu bundle de Vue --}}
+		@vite('resources/js/frontend/main.js')
+	</body>
 </html>

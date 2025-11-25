@@ -104,17 +104,10 @@
         return '/images/default-logo.png'
     })
 
-    const avatarUrl = computed(() => {
-        const u = auth.user
-
-        if (!u) return 'uploads/avatar/default_small.jpg'
-
-        if (u.avatar) {
-            return `uploads/avatar/${u.avatar}_small.jpg`
-        }
-
-        return 'uploads/avatar/default_small.jpg'
-    })
+	const avatarUrl = computed(() => {
+		if (!auth.perfil) return '/uploads/avatar/default_medium.jpg'
+		return `/uploads/avatar/${auth.perfil.avatar}_medium.jpg`
+	})
 </script>
 
 <style scoped>
