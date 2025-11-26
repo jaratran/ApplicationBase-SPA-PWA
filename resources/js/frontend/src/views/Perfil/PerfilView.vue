@@ -49,15 +49,7 @@
 
 						<div class="card-body">
 							<!-- 🔹 ALERTAS AL ESTILO EcoRuta -->
-							<div v-if="alert.message"
-								:class="{
-									'alert alert-success': alert.type === 'success',
-									'alert alert-danger': alert.type === 'error',
-									'alert alert-warning': alert.type === 'warning'
-								}"
-							>
-								{{ alert.message }}
-							</div>
+							<AlertSystem />
 
 							<!-- Botones -->
 							<div class=" flex gap-2 mb-3">

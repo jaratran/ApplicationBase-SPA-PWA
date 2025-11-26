@@ -5,6 +5,8 @@ import axios from 'axios'                                                       
 import { createPinia } from 'pinia'                                                 // manejo de estado
 import router from './src/router'                                                   // navegación front para PWA
 
+import AlertSystem from './src/components/AlertSystem.vue'							// componente global para alertas del sistema con estilo de alerts de EcoRuta
+
 import { applyDesignParameters } from './src/utils/applyDesignParameters'           // consulta tu API para obtener parámetros de diseño
 import App from './src/App.vue'                                                     // Monta App principal
 
@@ -22,6 +24,9 @@ if (token) {
 applyDesignParameters().then(() => {
     const app = createApp(App)
     app.use(createPinia())
-    app.use(router)
+	app.use(router)
+
+	app.component('AlertSystem', AlertSystem)										// registrar globalmente el uso de los alertas del sistema como EcoRuta
+
     app.mount('#app')
 })
