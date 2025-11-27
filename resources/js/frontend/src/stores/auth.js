@@ -13,6 +13,9 @@ export const useAuthStore = defineStore('auth', {
 	}),
 
 	actions: {
+		/** ==========================
+		 *  COOKIE CSRF - SESION
+		 *  ========================== */
 		async getCsrfCookie() {
 			try {
 				await sanctum.get('/csrf-cookie')
@@ -31,26 +34,31 @@ export const useAuthStore = defineStore('auth', {
 			this.error = null
 
 			try {
-				// -1) Sesión
+				// 0) Obtener cookie CSRF
 				await this.getCsrfCookie()
 
-				// 0) Login
+				// 1) Intentar login
 				await api.post('/login', { email, password })
 
-				// 1) Usuario básico (equivalente a Auth::user())
-				await this.fetchUser()
+				// 2) Cargar usuario básico y perfil extendido
+				const user = await this.fetchUser()
+				const perfil = await this.fetchPerfil()
 
-				// 2) Perfil extendido completo (con avatar)
-				await this.fetchPerfil()
+				// Si ambos existen, login exitoso → retornamos true
+				if (user && perfil) {
+					return true
+				}
 
-				// 3) Enrutamos al Panel de Control
-				router.push('/dashboard')
+				// Si por alguna razón falta algo, lo tratamos como error
+				this.error = 'No fue posible cargar los datos de usuario.'
+				return false
 
 			} catch (error) {
 				console.error('Error en login:', error)
 				this.error = 'Credenciales inválidas o error de conexión.'
 				this.user = null
 				this.perfil = null
+				return false
 
 			} finally {
 				this.loading = false
@@ -97,15 +105,16 @@ export const useAuthStore = defineStore('auth', {
 
 			try {
 				await api.post('/logout')
+				return true
 
 			} catch (error) {
 				console.warn('Error al cerrar sesión (ignorado):', error)
+				return false
 
 			} finally {
 				this.user = null
 				this.perfil = null
 				this.loading = false
-				router.push('/login')
 			}
 		},
 	}

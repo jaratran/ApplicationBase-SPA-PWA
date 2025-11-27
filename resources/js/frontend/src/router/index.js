@@ -12,65 +12,81 @@ import PerfilEditarView from '../views/Perfil/PerfilEditarView.vue'
 
 // 🗺️ Definición de rutas
 const routes = [
-  { path: '/', redirect: '/login' },
+	{
+		path: '/',
+		redirect: '/login'
+	},
 
-  // 🧱 Login (NO requiere autenticación)
-  {
-    path: '/login',
-    name: 'login',
-    component: LoginView,
-    meta: { requiresAuth: false },
-  },
+	// 🧱 Login (NO requiere autenticación)
+	{
+		path: '/login',
+		name: 'login',
+		component: LoginView,
+		meta: { requiresAuth: false },
+	},
 
-  // 🧭 Dashboard (requiere autenticación)
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: DashboardView,
-    meta: { requiresAuth: true },
-  },
+	// 🧭 Dashboard (requiere autenticación)
+	{
+		path: '/dashboard',
+		name: 'dashboard',
+		component: DashboardView,
+		meta: { requiresAuth: true },
+	},
 
-  // 👤 Show del Perfil del Usuario
-  {
-    path: '/perfil',
-    name: 'perfil',
-    component: PerfilView,
-    meta: { requiresAuth: true }
-  },
+	// 👤 Show del Perfil del Usuario
+	{
+		path: '/perfil',
+		name: 'perfil',
+		component: PerfilView,
+		meta: { requiresAuth: true }
+	},
 
-  // 👤 Edit del Perfil del Usuario
-  {
-    path: '/perfil/editar',
-    name: 'perfil.editar',
-    component: PerfilEditarView,
-    meta: { requiresAuth: true }
-  },
+	// 👤 Edit del Perfil del Usuario
+	{
+		path: '/perfil/editar',
+		name: 'perfil.editar',
+		component: PerfilEditarView,
+		meta: { requiresAuth: true }
+	},
 
-  // // 👤 Cambio de Contraseña del Perfil del Usuario
-  // {
-  //   path: '/perfil/password',
-  //   name: 'perfil.password',
-  //   component: PerfilPasswordView,
-  //   meta: { requiresAuth: true }
-  // },
+	// // 👤 Cambio de Contraseña del Perfil del Usuario
+	// {
+	//   path: '/perfil/password',
+	//   name: 'perfil.password',
+	//   component: PerfilPasswordView,
+	//   meta: { requiresAuth: true }
+	// },
 
-  // 🚧 Ruta comodín: redirige a login
-  { path: '/:pathMatch(.*)*', redirect: '/login' },
+	// 🚧 Ruta comodín: redirige a login
+	{
+		path: '/:pathMatch(.*)*',
+		redirect: '/login'
+	},
 ]
 
 // ⚙️ Instancia del router
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+	history: createWebHistory(),
+	routes,
 })
 
-// 🔒 Protección de rutas
+// 🔒 Protección de rutas rehidratando AMBOS: user + perfil
 router.beforeEach(async (to) => {
-  const auth = useAuthStore()
-  if (to.meta.requiresAuth && !auth.user) {
-    await auth.fetchUser()
-    if (!auth.user) return '/login'
-  }
+	const auth = useAuthStore()
+
+	if (to.meta.requiresAuth) {
+		if (!auth.user) {
+			await auth.fetchUser()
+		}
+
+		if (!auth.perfil) {
+			await auth.fetchPerfil()
+		}
+
+		if (!auth.user) {
+			return '/login'
+		}
+	}
 })
 
 export default router

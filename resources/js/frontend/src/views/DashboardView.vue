@@ -148,63 +148,65 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 
 const panel = ref({
-  fecha_vigente_programa: "",
-  version_programa_diario: null,
-  totalKilosEstimados: 0,
-  desdeFecha: "12-07-1972",
-  hastaFecha: "18-02-1975",
-  kpiRcvrHoy: 0,
-  kpiAcumPlan: 0,
-  kpiAcumReal: 0,
-  detalles: [],
-});
-
-function formatNumber(value) {
-  if (value === null || value === undefined) return "-";
-  return new Intl.NumberFormat("es-CL").format(value);
-}
-
-async function fetchPanelData() {
-  try {
-    const response = await axios.get("/api/panel/datos");
-    if (response.data.status === "success") {
-      panel.value = response.data.data;
-    } else {
-      console.warn("Respuesta no exitosa:", response.data.message);
-    }
-  } catch (error) {
-    console.error("Error al obtener datos del panel:", error);
-  }
-}
+					fecha_vigente_programa: "",
+					version_programa_diario: null,
+					totalKilosEstimados: 0,
+					desdeFecha: "12-07-1972",
+					hastaFecha: "18-02-1975",
+					kpiRcvrHoy: 0,
+					kpiAcumPlan: 0,
+					kpiAcumReal: 0,
+					detalles: [],
+				});
 
 onMounted(fetchPanelData);
+
+async function fetchPanelData() {
+	try {
+		const response = await axios.get("/api/panel/datos");
+
+		if (response.data.status === "success") {
+			panel.value = response.data.data;
+		} else {
+			console.warn("Respuesta no exitosa:", response.data.message);
+		}
+
+	} catch (error) {
+		console.error("Error al obtener datos del panel:", error);
+	}
+}
+
+function formatNumber(value) {
+	if (value === null || value === undefined) return "-";
+	return new Intl.NumberFormat("es-CL").format(value);
+}
 </script>
 
 <style scoped>
-  /* === Headers de cards secundarias propias de DashBoard (Gráficos y KPIs) === */
-  .card-header:not(.fs-5) {
-    font-size: 0.9rem;  /* ~14px, sobrio */
-    font-weight: 400;  /* liviano, contrasta con el h2 grande */
-    letter-spacing: 0.3px;
-    line-height: 1.3;
-  }
+	/* === Headers de cards secundarias propias de DashBoard (Gráficos y KPIs) === */
+	.card-header:not(.fs-5) {
+		font-size: 0.9rem;  /* ~14px, sobrio */
+		font-weight: 400;  /* liviano, contrasta con el h2 grande */
+		letter-spacing: 0.3px;
+		line-height: 1.3;
+	}
 
-  /* === Body de cards secundarias de KPIs === */
-  .card-body h2 {
-    font-size: 1.8rem;
-    font-weight: 400 !important;
-    margin: 0;
-  }
+	/* === Body de cards secundarias de KPIs === */
+	.card-body h2 {
+		font-size: 1.8rem;
+		font-weight: 400 !important;
+		margin: 0;
+	}
 
-  /* === Placeholder de gráficos === */
-  .placeholder-chart {
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-    border: 1px dashed #ccc;
-    color: #999;
-    font-style: italic;
-  }
+	/* === Placeholder de gráficos === */
+	.placeholder-chart {
+		height: 220px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f8f9fa;
+		border: 1px dashed #ccc;
+		color: #999;
+		font-style: italic;
+	}
 </style>

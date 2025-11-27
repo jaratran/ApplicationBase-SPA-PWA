@@ -56,58 +56,59 @@
     import { useRouter } from 'vue-router'
     import { useAuthStore } from '../stores/auth'
 
+    const router = useRouter()
+    const auth = useAuthStore()
+
     // Referencias
     const menuRef = ref(null)
     const menuOpen = ref(false)
 
-    const router = useRouter()
-    const auth = useAuthStore()
+	onMounted(() => {
+		window.addEventListener('click', handleClickOutside)
+	})
+
+	onBeforeUnmount(() => {
+		window.removeEventListener('click', handleClickOutside)
+	})
+
+	const handleClickOutside = (event) => {
+		if (menuRef.value && !menuRef.value.contains(event.target)) {
+			menuOpen.value = false
+		}
+	}
+
+	const logoUrl = computed(() => {
+		const p = window.DesignParameters || {}							// applyDesignParameters() deja estos datos aquí
+
+		if (p.logo_design) {
+			return `/config/${p.logo_design}`
+		}
+
+		// Fallback si no existe todavía
+		return '/images/default-logo.png'
+	})
+
+	const avatarUrl = computed(() => {
+		if (!auth.perfil) return '/uploads/avatar/default_medium.jpg'
+		return `/uploads/avatar/${auth.perfil.avatar}_medium.jpg`
+	})
 
     const toggleMenu = () => {
         menuOpen.value = !menuOpen.value
     }
-
-    const handleClickOutside = (event) => {
-        if (menuRef.value && !menuRef.value.contains(event.target)) {
-            menuOpen.value = false
-        }
-    }
-
-    onMounted(() => {
-        window.addEventListener('click', handleClickOutside)
-    })
-
-    onBeforeUnmount(() => {
-        window.removeEventListener('click', handleClickOutside)
-    })
 
     const goPerfil = () => {
         menuOpen.value = false
         router.push('/perfil')
     }
 
-    const logout = async () => {
-        menuOpen.value = false
-        await auth.logout()
-        router.push('/login')
-    }
+	const logout = async () => {
+		menuOpen.value = false
+		const ok = await auth.logout()
 
-    const logoUrl = computed(() => {
-        // applyDesignParameters() deja estos datos aquí
-        const p = window.DesignParameters || {}
-
-        if (p.logo_design) {
-            return `/config/${p.logo_design}`
-        }
-
-        // Fallback si no existe todavía
-        return '/images/default-logo.png'
-    })
-
-	const avatarUrl = computed(() => {
-		if (!auth.perfil) return '/uploads/avatar/default_medium.jpg'
-		return `/uploads/avatar/${auth.perfil.avatar}_medium.jpg`
-	})
+		// solo navegamos acá
+		router.push('/login')
+	}
 </script>
 
 <style scoped>

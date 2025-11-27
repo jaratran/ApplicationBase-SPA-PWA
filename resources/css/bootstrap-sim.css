@@ -104,6 +104,14 @@
 }
 
 /* BOTONES */
+/* Configuraciones especificas de Botones */
+.btn-full {
+	width: 100%;										/* fuerza el ancho completo */
+}
+.btn i {												/* el margin-right del ícono (.btn i) */
+	margin-right: 4px;
+}
+
 /* === Botones primary y secondary estilo Bootstrap 5 === */
 .btn-primary {
     background-color: var(--bs-primary, #0d6efd) !important;
@@ -130,14 +138,6 @@
     background-color: #fff !important;
     border-color: var(--bs-secondary, #6c757d) !important;
     color: var(--bs-secondary, #6c757d) !important;
-}
-
-/* Configuraciones especificas de Botones */
-.btn-full {
-    width: 100%;
-}
-.btn i {
-    margin-right: 4px;
 }
 
 /* NOMBRE COMPLETO USUARIO PERFIL */
