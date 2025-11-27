@@ -62,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAlertStore } from '../../stores/alert'
 import { useRouter } from 'vue-router'
 import api from '../../services/api'						// tu instancia Axios API
@@ -73,6 +73,10 @@ const alert = useAlertStore()
 
 const email = ref('')
 const loading = ref(false)
+
+onMounted(() => {
+	alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
+})
 
 function getPrimaryColor() {
 	return (
@@ -110,7 +114,7 @@ async function submitEmail() {
 
 	} catch (error) {
 		const msg = error.response?.data?.message || 'No fue posible enviar el enlace.'
-		alert.show(msg, 'error')
+		alert.show(msg, 'error')																	// Mostrar alerta local SI hubo error
 
 	} finally {
 		loading.value = false

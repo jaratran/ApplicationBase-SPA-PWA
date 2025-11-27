@@ -160,8 +160,7 @@
 	const comunas = ref([])
 
 	onMounted(async () => {
-		// 0) Mostrar alert si es pendiente
-		alert.prepare()
+		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
 		// 1) Cargar perfil del usuario
 		await auth.fetchPerfil()
@@ -251,7 +250,7 @@
 
 			// Si quieres refrescar perfil global
 			await auth.fetchPerfil()
-			alert.show('El perfil ha sido actualizado correctamente', 'success')
+			alert.show('El perfil ha sido actualizado correctamente', 'success', true) // Alerta persistente para vista Perfil
 
 		} catch (error) {
 			alert.show('Error al actualizar el perfil.', 'error')

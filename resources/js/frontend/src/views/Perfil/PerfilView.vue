@@ -145,8 +145,7 @@
     const router = useRouter()
 
 	onMounted(async () => {
-		// 0) Mostrar alert si es pendiente
-		alert.prepare()
+		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
 		// 1) Recuperar perfil
 		await auth.fetchPerfil()

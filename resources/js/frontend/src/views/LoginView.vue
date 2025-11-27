@@ -76,10 +76,10 @@
 </template>
 
 <script setup>
-	import { ref, computed } from 'vue'
+	import { ref, computed, onMounted } from 'vue'
 	import { useAlertStore } from '../stores/alert'
-	import { useRouter } from 'vue-router'
 	import { useAuthStore } from '../stores/auth'
+	import { useRouter } from 'vue-router'
 
 	import '../../../../css/auth.css'										// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
 
@@ -91,6 +91,10 @@
 	const email = ref('')
 	const password = ref('')
 	const showPassword = ref(false)
+
+	onMounted(() => {
+		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
+	})
 
 	function getPrimaryColor() {
 		return (
@@ -129,7 +133,7 @@
 
 		// Mostrar alerta al estilo EcoRuta
 		if (auth.error) {
-			alert.show(auth.error, 'error')					// Mostrar alerta SOLO SI hubo error
+			alert.show(auth.error, 'error')					// Mostrar alerta local SOLO SI hubo error
 		}
 	}
 </script>

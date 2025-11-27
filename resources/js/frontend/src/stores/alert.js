@@ -9,7 +9,7 @@ export const useAlertStore = defineStore('alert', () => {
 	const pending = ref(false)
 
 	/** Recibe string, array o string con saltos de línea */
-	function show(msg, t = 'success') {
+	function show(msg, t = 'success', persist = false) {				// persist = false → alerta válida solo en esta vista
 		if (Array.isArray(msg)) {
 			messages.value = msg.flatMap(m => m.split('\n'))
 		} else {
@@ -17,7 +17,7 @@ export const useAlertStore = defineStore('alert', () => {
 		}
 
 		type.value = t
-		pending.value = true
+		pending.value = persist											// persist = true → debe persistir para la siguiente vista (verse allá)
 	}
 
 	function prepare() {
