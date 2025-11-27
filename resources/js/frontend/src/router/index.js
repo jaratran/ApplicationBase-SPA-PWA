@@ -4,10 +4,13 @@ import { useAuthStore } from '../stores/auth'                           // Usa e
 
 // 🧩 Importar vistas y layouts
 import LoginView from '../views/LoginView.vue'
+import ForgotPasswordView from '../views/Auth/ForgotPasswordView.vue'
+
 import DashboardView from '../views/DashboardView.vue'
 
 import PerfilView from '../views/Perfil/PerfilView.vue'
 import PerfilEditarView from '../views/Perfil/PerfilEditarView.vue'
+
 // import PerfilPasswordView from '../views/Perfil/PerfilPasswordView.vue'
 
 // 🗺️ Definición de rutas
@@ -22,6 +25,14 @@ const routes = [
 		path: '/login',
 		name: 'login',
 		component: LoginView,
+		meta: { requiresAuth: false },
+	},
+
+	// 🧱 Recuperar Contraseña (NO requiere autenticación)
+	{
+		path: '/forgot-password',
+		name: 'forgot-password',
+		component: ForgotPasswordView,
 		meta: { requiresAuth: false },
 	},
 

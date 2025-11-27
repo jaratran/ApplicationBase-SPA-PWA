@@ -54,9 +54,10 @@
 
 						<!-- LINKS -->
 						<div class="flex flex-col space-y-4">
-							<a class="btn btn-link" href="#">
+							<a class="btn btn-link" @click.prevent="router.push('/forgot-password')">
 								¿Olvidó su Contraseña?
 							</a>
+
 							<a class="link-onway" target="_blank" href="https://onway.entelocean.com/Home/Index/es">
 								Ir a Onway
 								<i class="fa fa-external-link-alt icon-onway"></i>
