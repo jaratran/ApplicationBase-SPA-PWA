@@ -54,6 +54,19 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+	/*
+	|--------------------------------------------------------------------------
+	| Frontend Application URL
+	|--------------------------------------------------------------------------
+	|
+	| This value is the base URL of the frontend SPA that consumes this API.
+	| It is used when the application needs to generate links intended to be
+	| opened directly in the client-side interface (such as password reset or
+	| email verification links). If not set, it falls back to the backend URL.
+	|
+	*/
+	'frontend_url' => env('FRONTEND_URL', env('APP_URL')),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

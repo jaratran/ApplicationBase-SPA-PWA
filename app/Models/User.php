@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 
 use App\Models\Catalogo;
@@ -72,7 +72,7 @@ class User extends Authenticatable
 
     /**
      * Método getNombreCompletoAttribute (->nombre_completo) en Conductor para combinar nombre y apellido fácilmente.
-     * 
+     *
      */
     public function getNombreCompletoAttribute()
     {
@@ -88,10 +88,11 @@ class User extends Authenticatable
     {
         return $this->email;
     }
-  
-    /**
-     * Cada vez que se ejecute el flujo de reset (ya sea con el broker o con el trait),
-     * Laravel llamará a notificación CustomResetPassword en lugar de usar la nativa.
+
+	/**
+	 * Sobrescribe la notificación de restablecimiento de contraseña que Laravel usa por defecto.
+	 * Cuando el broker genere un token de reset, Laravel llamará a este método, y en lugar de la
+	 * notificación estándar enviará nuestra notificación personalizada CustomResetPassword.
      *
      * @return string
      */

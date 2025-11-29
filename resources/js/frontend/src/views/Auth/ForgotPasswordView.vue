@@ -106,10 +106,7 @@ async function submitEmail() {
 	loading.value = true
 
 	try {
-		const { data } = await api.post('/forgot-password', {
-			email: email.value
-		})
-
+		const { data } = await api.post('/forgot-password', { email: email.value })
 		alert.show(data.message || 'Se enviaron las instrucciones a su correo.', 'success')
 
 	} catch (error) {

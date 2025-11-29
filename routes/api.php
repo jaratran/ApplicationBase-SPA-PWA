@@ -3,9 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+
 use App\Http\Controllers\Api\DesignParameterController;
 use App\Http\Controllers\Api\PanelController;
 use App\Http\Controllers\Api\ProfileController;
+
 use App\Http\Controllers\Api\Parametros\LocationController;
 
 // =============================
@@ -15,6 +18,9 @@ use App\Http\Controllers\Api\Parametros\LocationController;
 // Login público
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/design-parameters', [DesignParameterController::class, 'index']);
+
+// POST /api/forgot-password
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 
 // Rutas protegidas por Sanctum y el nuevo middleware (para manejar LogOut sin LogIn)
 Route::middleware(['auth:sanctum'])->group(function () {
