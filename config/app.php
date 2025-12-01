@@ -156,8 +156,26 @@ return [
 
 	'providers' => Illuminate\Support\ServiceProvider::defaultProviders()->merge([
 
+        App\Providers\AppServiceProvider::class,
 		App\Providers\ViewServiceProvider::class,
 
 	])->toArray(),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logging de Consultas SQL
+    |--------------------------------------------------------------------------
+    |
+    | Esta configuración permite habilitar o deshabilitar el registro de todas
+    | las consultas SQL ejecutadas por la aplicación. Se define aquí para
+    | evitar lecturas de variables de entorno en tiempo de ejecución dentro
+    | de AppServiceProvider, manteniendo un flujo más eficiente y seguro.
+    |
+    | Al definir "LOG_SQL_QUERIES" en el archivo .env, se puede activar esta
+    | funcionalidad para depuración sin modificar código del proyecto.
+    |
+    */
+
+    'log_sql_queries' => env('LOG_SQL_QUERIES', false),
 
 ];
