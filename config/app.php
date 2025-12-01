@@ -157,6 +157,9 @@ return [
 	'providers' => Illuminate\Support\ServiceProvider::defaultProviders()->merge([
 
         App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
 		App\Providers\ViewServiceProvider::class,
 
 	])->toArray(),
