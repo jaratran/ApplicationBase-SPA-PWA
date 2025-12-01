@@ -144,4 +144,20 @@ return [
         'dashboard_fecha_fija' => env('DASHBOARD_FECHA_FIJA'),
     ],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Autoloaded Service Providers (Laravel 12.30+)
+	|--------------------------------------------------------------------------
+	|
+	| Aquí se combinan los providers base del framework con los providers
+	| definidos por la aplicación. NO reemplaza los del core.
+	|
+	*/
+
+	'providers' => Illuminate\Support\ServiceProvider::defaultProviders()->merge([
+
+		App\Providers\ViewServiceProvider::class,
+
+	])->toArray(),
+
 ];

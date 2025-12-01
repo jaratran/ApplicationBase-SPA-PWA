@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-use App\Models\DesignParameter;
 use App\Models\OperationalParameter;
 
 class ResetPasswordMailable extends Mailable
@@ -31,7 +30,6 @@ class ResetPasswordMailable extends Mailable
                       ->with([
                                 'user'     => $this->user,
                                 'resetUrl' => $this->resetUrl,
-								'designParameter'      => DesignParameter::first(),
                                 'operationalParameter' => OperationalParameter::first(),
                             ]);
 

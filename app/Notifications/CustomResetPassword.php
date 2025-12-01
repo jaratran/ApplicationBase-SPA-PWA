@@ -5,7 +5,6 @@ namespace App\Notifications;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 use App\Mail\ResetPasswordMailable;
-use App\Models\OperationalParameter;
 
 class CustomResetPassword extends Notification
 {
