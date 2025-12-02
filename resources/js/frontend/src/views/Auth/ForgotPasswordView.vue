@@ -107,7 +107,8 @@ async function submitEmail() {
 
 	try {
 		const { data } = await api.post('/forgot-password', { email: email.value })
-		alert.show(data.message || 'Se enviaron las instrucciones a su correo.', 'success')
+		alert.show(data.message, 'success', true) 													// Alerta persistente para vista en Login
+		return router.push('/login')																// Con return evita que siga ejecutándose el resto del código
 
 	} catch (error) {
 		const msg = error.response?.data?.message || 'No fue posible enviar el enlace.'
