@@ -13,10 +13,6 @@ body {
     font-weight: 400; /* normal, más liviano */
   }
 
-  h1, h2, h3, h4, h5 {
-    font-weight: 500; /* títulos un poco más fuertes */
-  }
-
   .text-normal {
     font-size: 1rem;    /* tamaño base (≈16 px) */
     font-weight: 400;    /* sin énfasis extra */

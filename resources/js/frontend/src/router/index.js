@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth'                           // Usa e
 // 🧩 Importar vistas y layouts
 import LoginView from '../views/LoginView.vue'
 import ForgotPasswordView from '../views/Auth/ForgotPasswordView.vue'
+import ResetPasswordView from '../views/Auth/ResetPasswordView.vue'
 
 import DashboardView from '../views/DashboardView.vue'
 
@@ -33,6 +34,14 @@ const routes = [
 		path: '/forgot-password',
 		name: 'forgot-password',
 		component: ForgotPasswordView,
+		meta: { requiresAuth: false },
+	},
+
+	// 🧱 Restablecer Contraseña (NO requiere autenticación)
+	{
+		path: '/reset-password/:token',
+		name: 'reset-password',
+		component: ResetPasswordView,
 		meta: { requiresAuth: false },
 	},
 

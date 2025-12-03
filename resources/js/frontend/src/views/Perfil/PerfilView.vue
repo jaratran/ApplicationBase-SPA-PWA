@@ -14,7 +14,7 @@
 						<div class="card-body text-center">
 							<img :src="avatarMedium" class="rounded-circle avatar-img" alt="Avatar">
 
-							<h4 class="mt-3">
+							<h4 class="h4 mt-3">
 								{{ auth.perfil.nombre_usuario }} {{ auth.perfil.apellidos_usuario }}
 							</h4>
 
@@ -65,7 +65,7 @@
 							</div>
 
 							<!-- Datos Personales -->
-							<h5 class="section-title">Datos Personales</h5>
+							<h5 class="h5 section-title">Datos Personales</h5>
 
 							<table class="table table-bordered table-striped table-sm">
 								<tbody>
@@ -101,7 +101,7 @@
 							</table>
 
 							<!-- Dirección -->
-							<h5 class="section-title mt-4">Dirección</h5>
+							<h5 class="h5 section-title mt-3">Dirección</h5>
 
 							<table class="table table-bordered table-striped table-sm">
 								<tbody>
@@ -203,37 +203,49 @@
         border-radius: 50% !important;  /* Asegura avatar en círculo perfecto */
     }
 
-    /* FORMULARIO ACTUALIZAR AVATAR */
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    .form-label {
-        font-size: .85rem;
-        margin-bottom: .25rem;
-    }
-    /* === Input file IDÉNTICO al de Bootstrap 5 === */
-    .form-control[type="file"] {
-        background-color: #ffffff;    /* ← Área del texto: blanco */
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        width: 100%;
-    }
-    /* Botón del input file (Chrome, Edge, etc.) */
-    .form-control[type="file"]::-webkit-file-upload-button {
-        background-color: #f8f9fa;    /* ← Botón gris */
-        border: 1px solid #ced4da;
-        padding: 0.375rem 0.75rem;
-        margin-right: .75rem;
-        cursor: pointer;
-    }
-    /* Hover del botón */
-    .form-control[type="file"]::-webkit-file-upload-button:hover {
-        background-color: #e9ecef;    /* Gris más oscuro en hover */
-    }
+	/* FORMULARIO ACTUALIZAR AVATAR */
+	.form-group {
+		margin-bottom: 1rem;	/* idéntico a Bootstrap */
+	}
+	.form-label {	/* Label */
+		font-size: .85rem;	/* ~14px = Bootstrap */
+		margin-bottom: 0rem;	/* separación correcta */
+		font-weight: 500;	/* más cercano al estilo Bootstrap */
+		color: #212529;	/* texto estándar */
+	}
+	.form-control[type="file"] {	/* Input file (Bootstrap 5) */
+		background-color: #ffffff;	/* ← Área del texto: blanco */
+		border: .9px solid #ced4da;
+		border-radius: 0.25rem;
+		width: 100%;
+		padding: 0rem 0rem;	/* padding idéntico a Bootstrap */
+		font-size: .9rem;	/* 15px, igual que EcoRuta */
+		line-height: 1.5;
+		cursor: pointer;
+	}
+	.form-control[type="file"]::-webkit-file-upload-button {	/* Botón visible dentro del input file (Chrome/Edge/Safari) */
+		background-color: #f8f9fa;
+		border: .9px solid #ced4da;
+		border-radius: 0.25rem 0 0 0.25rem;
+		padding: .375rem .75rem;	/* mismo padding que input */
+		margin-right: .75rem;
+		font-size: .875rem;
+		cursor: pointer;
+	}
+	.form-control[type="file"]::-webkit-file-upload-button:hover {
+		background-color: #e9ecef;
+	}
 
     /* Estilo de Cabecera Tabla Perfil LaPortada */
     .table th {
         width: 35%;
         background: #f0f0f0;
     }
+
+	/* TÍTULOS DE SECCIÓN (En Perfil : Datos Personales, Dirección) */
+	.section-title {
+		font-weight: 300;
+		font-size: 1.3rem;
+		margin-bottom: 0.4rem;
+	}
 </style>

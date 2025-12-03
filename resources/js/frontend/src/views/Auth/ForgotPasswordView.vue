@@ -62,62 +62,63 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useAlertStore } from '../../stores/alert'
-import { useRouter } from 'vue-router'
-import api from '../../services/api'						// tu instancia Axios API
-import '../../../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
+	import { ref, computed, onMounted } from 'vue'
+	import { useAlertStore } from '../../stores/alert'
+	import { useRouter } from 'vue-router'
+	import api from '../../services/api'						// tu instancia Axios API
+	import '../../../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
 
-const router = useRouter()
-const alert = useAlertStore()
+	const router = useRouter()
+	const alert = useAlertStore()
 
-const email = ref('')
-const loading = ref(false)
+	const email = ref('')
 
-onMounted(() => {
-	alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
-})
+	const loading = ref(false)
 
-function getPrimaryColor() {
-	return (
-		getComputedStyle(document.documentElement)
-			.getPropertyValue('--bs-primary')
-			.trim() || '#004aad'
-	)
-}
+	onMounted(() => {
+		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
+	})
 
-function getEmblema() {
-	const url = getComputedStyle(document.documentElement)
-		.getPropertyValue('--emblema-design')
-		.trim()
-	if (url.startsWith('url(')) return url.slice(4, -1).replace(/["']/g, '')
-	return '/config/default-emblema.png'
-}
-
-function getBackground() {
-	const url = getComputedStyle(document.documentElement)
-		.getPropertyValue('--background-design')
-		.trim()
-	if (url.startsWith('url(')) return url.slice(4, -1).replace(/["']/g, '')
-	return '/config/default_fondo.png'
-}
-
-async function submitEmail() {
-	loading.value = true
-
-	try {
-		const { data } = await api.post('/forgot-password', { email: email.value })
-		alert.show(data.message, 'success', true) 													// Alerta persistente para vista en Login
-		return router.push('/login')																// Con return evita que siga ejecutándose el resto del código
-
-	} catch (error) {
-		const msg = error.response?.data?.message || 'No fue posible enviar el enlace.'
-		alert.show(msg, 'error')																	// Mostrar alerta local SI hubo error
-
-	} finally {
-		loading.value = false
+	function getPrimaryColor() {
+		return (
+			getComputedStyle(document.documentElement)
+				.getPropertyValue('--bs-primary')
+				.trim() || '#004aad'
+		)
 	}
-}
+
+	function getEmblema() {
+		const url = getComputedStyle(document.documentElement)
+			.getPropertyValue('--emblema-design')
+			.trim()
+		if (url.startsWith('url(')) return url.slice(4, -1).replace(/["']/g, '')
+		return '/config/default-emblema.png'
+	}
+
+	function getBackground() {
+		const url = getComputedStyle(document.documentElement)
+			.getPropertyValue('--background-design')
+			.trim()
+		if (url.startsWith('url(')) return url.slice(4, -1).replace(/["']/g, '')
+		return '/config/default_fondo.png'
+	}
+
+	async function submitEmail() {
+		loading.value = true
+
+		try {
+			const { data } = await api.post('/forgot-password', { email: email.value })
+			alert.show(data.message, 'success', true) 													// Alerta persistente para vista en Login
+			return router.push('/login')																// Con return evita que siga ejecutándose el resto del código
+
+		} catch (error) {
+			const msg = error.response?.data?.message || 'No fue posible enviar el enlace.'
+			alert.show(msg, 'error')																	// Mostrar alerta local SI hubo error
+
+		} finally {
+			loading.value = false
+		}
+	}
 </script>
 
 <style scoped></style>

@@ -140,26 +140,41 @@
     color: var(--bs-secondary, #6c757d) !important;
 }
 
-/* NOMBRE COMPLETO USUARIO PERFIL */
-h4 {
-    line-height: 1.2;
-    font-size: 1.5rem;
-    margin-bottom: .5rem;
-}
-
-/* TITULOS DE SECCIONES VISTAS */
-h5 {
-	font-size: 1.2rem;
-	font-weight: 300;
+/* TITULOS HEADER DE BOOTSTRAP */
+.h1 {
+	font-size: 2.5rem;			/* ≈ text-4xl */
+	font-weight: 500;			/* fw-medium */
 	line-height: 1.2;
-	margin-bottom: .5rem;
 }
 
-/* TÍTULOS DE SECCIÓN (En Perfil : Datos Personales, Dirección) */
-.section-title {
-    font-weight: 300;
-    font-size: 1.3rem;
-    margin-bottom: 0.6rem;
+.h2 {
+	font-size: 2rem;			/* ≈ text-3xl */
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+.h3 {
+	font-size: 1.75rem;			/* entre 2xl y 3xl */
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+.h4 {
+	font-size: 1.5rem;			/* ≈ text-2xl */
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+.h5 {
+	font-size: 1.25rem;			/* ≈ text-xl */
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+.h6 {
+	font-size: 1rem;			/* text-base */
+	font-weight: 500;
+	line-height: 1.2;
 }
 
 /* 🧾 TABLES */
