@@ -37,7 +37,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/perfil/update', [ProfileController::class, 'updateData']);
     Route::post('/perfil/password', [ProfileController::class, 'updatePassword']);
 
-
 	Route::get('/regiones', [LocationController::class, 'obtenerRegion']);
 	Route::get('/regiones/{regionId}/comunas', [LocationController::class, 'obtenerComuna']);
 });

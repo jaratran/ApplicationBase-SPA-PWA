@@ -13,9 +13,8 @@
 
 		<!-- Contenido siempre centrado -->
 		<main class="p-4 z-0">
-			<!-- <slot /> -->
-
-			<div class="spa-container">
+			<!-- Si esta activo 'noPadding' (en router) no se aplica clase que simula container de Bootstrap 5 -->
+			<div :class="[$route.meta.noPadding ? '' : 'spa-container']">
 				<slot />
 			</div>
 		</main>

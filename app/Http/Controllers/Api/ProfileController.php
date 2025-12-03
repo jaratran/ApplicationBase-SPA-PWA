@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 use App\Traits\ProcesaAvatarTrait;
+
 use App\Models\User;
 
 class ProfileController extends Controller
@@ -64,16 +67,55 @@ class ProfileController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|min:8|confirmed'
-        ]);
+	public function updatePassword(Request $request)
+	{
+		// Validación equivalente a EcoRuta pero en formato API
+		$validator = Validator::make($request->all(), [
+			'password' => [
+				'required',
+				'string',
+				'min:8',
+				'regex:/[a-z]/',   // minúscula
+				'regex:/[A-Z]/',   // mayúscula
+				'regex:/[0-9]/',   // número
+				'same:password_confirmation'
+			],
+			'password_confirmation' => [
+				'required',
+				'string'
+			]
+		]);
 
-        $user = User::find(Auth::id());
-        $user->password = Hash::make($request->password);
-        $user->save();
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => 'No se pudo actualizar la contraseña.',
+				'errors'  => $validator->errors()
+			], 422);
+		}
 
-        return response()->json(['success' => true]);
-    }
+		try {
+			$user = $request->user(); // auth:sanctum
+
+			$user->password = Hash::make($request->password);
+			$user->save();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Contraseña actualizada correctamente.'
+			]);
+
+		} catch (\Throwable $e) {
+
+			Log::error('❌ Error al actualizar contraseña (API Calidad)', [
+				'error' => $e->getMessage(),
+			]);
+
+			return response()->json([
+				'success' => false,
+				'message' => 'Ocurrió un error inesperado.'
+			], 500);
+		}
+	}
+
 }

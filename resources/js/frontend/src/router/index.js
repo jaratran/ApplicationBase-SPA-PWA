@@ -11,8 +11,7 @@ import DashboardView from '../views/DashboardView.vue'
 
 import PerfilView from '../views/Perfil/PerfilView.vue'
 import PerfilEditarView from '../views/Perfil/PerfilEditarView.vue'
-
-// import PerfilPasswordView from '../views/Perfil/PerfilPasswordView.vue'
+import PasswordView from '../views/Perfil/PasswordView.vue'
 
 // 🗺️ Definición de rutas
 const routes = [
@@ -69,13 +68,13 @@ const routes = [
 		meta: { requiresAuth: true }
 	},
 
-	// // 👤 Cambio de Contraseña del Perfil del Usuario
-	// {
-	//   path: '/perfil/password',
-	//   name: 'perfil.password',
-	//   component: PerfilPasswordView,
-	//   meta: { requiresAuth: true }
-	// },
+	// 👤 Cambio de Contraseña del Perfil del Usuario
+	{
+		path: '/perfil/password',
+		name: 'perfil.password',
+		component: PasswordView,
+		meta: { requiresAuth: true, noPadding: true } // Agregamos variable que desactiva padding por defecto de las vistas logeadas
+	},
 
 	// 🚧 Ruta comodín: redirige a login
 	{
