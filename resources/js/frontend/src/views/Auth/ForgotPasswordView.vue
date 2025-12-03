@@ -25,7 +25,7 @@
 						<div class="mb-4">
 							<label class="form-label" for="email">Correo Electrónico</label>
 							<input class="form-control" id="email" v-model="email" type="email" required autofocus
-								autocomplete="email">
+								placeholder="Correo Electrónico" autocomplete="email">
 						</div>
 
 						<!-- BOTONERA AL ESTILO EcoRuta -->
