@@ -5,7 +5,7 @@
 // ===============================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v30";
+const CACHE_NAME = "Calidad-v37";
 
 // Cache de API específica
 const API_CACHE = "api-design-parameters";
@@ -26,14 +26,14 @@ const ASSETS_TO_CACHE = [
 	// build assets (JS / CSS / fuentes)
 	"/build/assets/app-9aYweeFC.js",
 	"/build/assets/app-CBQG2sON.css",
-	"/build/assets/bootstrap-sim-B3Y0FiiP.css",
+	"/build/assets/bootstrap-sim-DnvO0ZHj.css",
 	"/build/assets/fa-brands-400-BfBXV7Mm.woff2",
 	"/build/assets/fa-regular-400-BVHPE7da.woff2",
 	"/build/assets/fa-solid-900-8GirhLYJ.woff2",
 	"/build/assets/fa-v4compatibility-DnhYSyY-.woff2",
 	"/build/assets/index-ngrFHoWO.js",
-	"/build/assets/main-CyMOrrXf.js",
-	"/build/assets/main-D4sUyk9X.css",
+	"/build/assets/main-ClInZ5-G.css",
+	"/build/assets/main-DJnyt3rE.js",
 ];
 
 // ------------------------------------------------

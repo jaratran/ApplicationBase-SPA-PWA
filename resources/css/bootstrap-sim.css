@@ -84,19 +84,19 @@
 
 /* 🎨 COLORES */
 .bg-primary {
-    background-color: var(--bs-primary, #0d6efd) !important;
+    background-color: var(--bs-primary) !important;
 }
 
 .bg-secondary {
-    background-color: var(--bs-secondary, #6c757d) !important;
+    background-color: var(--bs-secondary) !important;
 }
 
 .bg-success {
-    background-color: var(--bs-success, #198754) !important;
+    background-color: var(--bs-success) !important;
 }
 
 .bg-warning {
-    background-color: var(--bs-warning, #ffc107) !important;
+    background-color: var(--bs-warning) !important;
 }
 
 .text-white {
@@ -114,8 +114,8 @@
 
 /* === Botones primary y secondary estilo Bootstrap 5 === */
 .btn-primary {
-    background-color: var(--bs-primary, #0d6efd) !important;
-    border: 1px solid var(--bs-primary, #0d6efd) !important;
+    background-color: var(--bs-primary) !important;
+    border: 1px solid var(--bs-primary) !important;
     color: #fff;
     font-size: .95rem;
     padding: .45rem .75rem;    /* ← Padding exacto de Bootstrap */
@@ -123,12 +123,12 @@
 }
 .btn-primary:hover {
     background-color: #fff !important;
-    border-color: var(--bs-primary, #0d6efd) !important;
-    color: var(--bs-primary, #0d6efd) !important;
+    border-color: var(--bs-primary) !important;
+    color: var(--bs-primary) !important;
 }
 .btn-secondary {
-    background-color: var(--bs-secondary, #6c757d) !important;
-    border: 1px solid var(--bs-secondary, #6c757d) !important;
+    background-color: var(--bs-secondary) !important;
+    border: 1px solid var(--bs-secondary) !important;
     color: #fff;
     font-size: .95rem;
     padding: .45rem .75rem;    /* ← Padding exacto de Bootstrap */
@@ -136,8 +136,8 @@
 }
 .btn-secondary:hover {
     background-color: #fff !important;
-    border-color: var(--bs-secondary, #6c757d) !important;
-    color: var(--bs-secondary, #6c757d) !important;
+    border-color: var(--bs-secondary) !important;
+    color: var(--bs-secondary) !important;
 }
 
 /* TITULOS HEADER DE BOOTSTRAP */

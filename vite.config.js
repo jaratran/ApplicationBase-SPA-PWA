@@ -50,4 +50,18 @@ export default defineConfig({
 		copyServiceWorker(),   // 👈 agrega el plugin de copia
 
 	],
+
+	/**
+	 * ⚠️ Sección SOLO para modo desarrollo (npm run dev)
+	 * Mantenerla como documentación técnica. No afecta producción porque Vite Dev Server no corre en ese entorno.
+	 */
+	server: {
+		host: 'calidad.hp-notebook.cl',
+		port: 5173,
+		https: {
+			key: fs.readFileSync('C:/xampp-8.2.12/apache/conf/ssl.key/calidad.key'),
+			cert: fs.readFileSync('C:/xampp-8.2.12/apache/conf/ssl.crt/calidad.crt'),
+		},
+	},
+
 })
