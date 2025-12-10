@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+// Shell principal para la SPA
+Route::get('/', function () {
+    return view('frontend');
+});
+
 // SPA Fallback — cualquier ruta que no sea /api/* carga la aplicación Vue
 Route::get('/{any}', function () {
     return view('frontend'); // Blade que carga el SPA

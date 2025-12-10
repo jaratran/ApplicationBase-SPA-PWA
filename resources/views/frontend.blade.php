@@ -19,11 +19,17 @@
 		<!-- Usar Font Awesome 6 (simple y sin integrity) -->
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" referrerpolicy="no-referrer" />
 
+		<!-- PWA: manifest - Chrome, Android, Safari y Windows detectan la PWA exclusivamente desde aca. -->
+		<link rel="manifest" href="/manifest.json">
+		<!-- PWA: color de tema - obligatorio para Android + iOS -->
+		<meta name="theme-color" content="#0f766e">
+
 		<!-- 🔹 Aquí cargamos los CSS con estilos de compatibilidad -->
-        @vite([
-            'resources/css/bootstrap-sim.css',
-            'resources/css/app.css'
-        ])
+		<!-- CSS + JS AUTOMÁTICOS POR VITE -->
+		@vite([
+			'resources/css/bootstrap-sim.css',
+			'resources/css/app.css'
+		])
     </head>
 
     <body class="antialiased">

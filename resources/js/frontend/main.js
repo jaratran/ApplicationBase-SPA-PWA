@@ -28,5 +28,12 @@ applyDesignParameters().then(() => {
 
 	app.component('AlertSystem', AlertSystem)										// registrar globalmente el uso de los alertas del sistema como EcoRuta
 
-    app.mount('#app')
+	app.mount('#app')
+
+	// 🔹 Registro del Service Worker (Permitir registro también en DEV para pruebas)
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('/service-worker.js')
+			.then(() => console.log("✔ Service Worker registrado"))
+			.catch(err => console.warn("⚠ Error registrando Service Worker:", err));
+	}
 })

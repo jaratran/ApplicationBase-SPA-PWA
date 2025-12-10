@@ -21,12 +21,32 @@ function hexToRgb(hex) {
  * (Equivalente a cómo EcoRuta definía el bloque <style> :root {...})
  */
 export async function applyDesignParameters() {
+	let data = null;
 
-  try {
-    const response = await fetch('/api/design-parameters');
-    if (!response.ok) throw new Error('Error al obtener parámetros de diseño');
+	try {
+		// Intentamos obtener desde red o desde Service Worker
+		const response = await fetch('/api/design-parameters').catch(() => null);
 
-    const data = await response.json();
+		if (response && response.ok) {
+			// Caso A: estamos online → OK
+			data = await response.json();
+
+		} else if (response) {
+			// Caso B: estamos offline → SW devolvió un Response válido
+			data = await response.json();
+
+		} else {
+			throw new Error("Sin conexión y sin fallback SW");
+		}
+
+	} catch (error) {
+		console.error("⚠️ No se pudieron obtener parámetros de diseño:", error);
+		return;   // evitar aplicar estilos vacíos
+	}
+
+	// ====================================================
+	// 🔥 Solo desde aquí hacia abajo se aplican los colores
+	// ====================================================
 
     // 🧩 1. Aplicar colores personalizados
     Object.entries(data).forEach(([key, value]) => {
@@ -85,7 +105,4 @@ export async function applyDesignParameters() {
     // 🧩 3. Opcionalmente, podríamos exponer un objeto global si el layout o el login lo requieren
     window.DesignParameters = data;
 
-  } catch (error) {
-    console.error('⚠️ No se pudieron aplicar los parámetros de diseño:', error);
-  }
 }
