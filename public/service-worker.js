@@ -1,40 +1,61 @@
-// ===============================================
+// ==================================================================================
 // Service Worker — Calidad PWA
-// Mejoras: favicon offline, manejo seguro de errores,
-// robustez API design-parameters y fallback SPA estable.
-// ===============================================
+// Mejoras:
+// 			Precarga automática de archivos que deben precachearse,
+// 			favicon offline, manejo seguro de errores, robustez API design-parameters
+// 			y fallback SPA estable.
+// ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v37";
+const CACHE_NAME = "Calidad-v40";
 
-// Cache de API específica
+/**
+ * --------------------------------------------------------------------------
+ * Precarga automática del manifest de Vite para el Service Worker
+ * --------------------------------------------------------------------------
+ * El archivo "manifest-sw.js" es generado automáticamente por el script:
+ *      scripts/generate-sw-manifest.js
+ * después de cada build de Vite.
+ *
+ * Dicho archivo expone un arreglo global:
+ *      self.__PRECACHE = [ ... ];
+ * que contiene archivos esenciales:
+ *   - El shell base de la SPA ("/")
+ *   - Íconos y recursos esenciales de la PWA
+ *   - Todos los bundles JS/CSS generados por Vite, incluidos los que poseen
+ *     nombres con hash dinámico y los importados por otros módulos.
+ *
+ * Al cargarlo aquí mediante importScripts(), el Service Worker obtiene la
+ * lista completa y actualizada de archivos que deben precachearse. Luego,
+ * ASSETS_TO_CACHE utiliza ese arreglo para garantizar que el SW instale
+ * siempre los assets correctos sin necesidad de mantener esta lista a mano.
+ */
+importScripts("/build/manifest-sw.js");
+const ASSETS_TO_CACHE = self.__PRECACHE;
+
+/**
+ * --------------------------------------------------------------------------
+ * Cache dedicado para parámetros de diseño dinámicos
+ * --------------------------------------------------------------------------
+ * API_CACHE se utiliza para almacenar en caché las respuestas de la API:
+ *      /api/design-parameters
+ *
+ * A diferencia del precache tradicional (ASSETS_TO_CACHE), que incluye solo
+ * archivos estáticos del build, este cache almacena datos JSON variables que
+ * la aplicación necesita incluso cuando está offline:
+ *   - Colores dinámicos del tema
+ *   - Logos e íconos personalizados
+ *   - Parámetros visuales configurables por el administrador
+ *
+ * Se maneja como un cache separado para:
+ *   - Mantener independencia entre assets estáticos y datos dinámicos
+ *   - Permitir invalidación selectiva sin afectar el precache completo
+ *   - Asegurar que la SPA pueda reconstruir su apariencia aún sin conexión
+ *
+ * El SW usará este cache en las estrategias de fetch para permitir que la
+ * aplicación cargue el diseño incluso en modo offline.
+ */
 const API_CACHE = "api-design-parameters";
-
-// Archivos esenciales que se precachean (app shell mínimo)
-const ASSETS_TO_CACHE = [
-	"/",								// ← Shell REAL
-	"/manifest.json",
-	"/config/pwa/icon-192.png",
-	"/config/pwa/icon-512.png",
-
-	// Precachear los PNG esenciales
-	"/config/default_emblema.png",
-	"/config/default_favicon.png",
-	"/config/default_fondo.png",
-	"/config/default_logo.png",
-
-	// build assets (JS / CSS / fuentes)
-	"/build/assets/app-9aYweeFC.js",
-	"/build/assets/app-CBQG2sON.css",
-	"/build/assets/bootstrap-sim-DnvO0ZHj.css",
-	"/build/assets/fa-brands-400-BfBXV7Mm.woff2",
-	"/build/assets/fa-regular-400-BVHPE7da.woff2",
-	"/build/assets/fa-solid-900-8GirhLYJ.woff2",
-	"/build/assets/fa-v4compatibility-DnhYSyY-.woff2",
-	"/build/assets/index-ngrFHoWO.js",
-	"/build/assets/main-ClInZ5-G.css",
-	"/build/assets/main-DJnyt3rE.js",
-];
 
 // ------------------------------------------------
 // INSTALACIÓN del Service Worker
@@ -43,9 +64,48 @@ self.addEventListener("install", (event) => {
 	console.log("[ServiceWorker] Install", CACHE_NAME);
 
 	event.waitUntil(
-		caches.open(CACHE_NAME)
-			.then(cache => cache.addAll(ASSETS_TO_CACHE))
-			.catch(() => null)
+		(async () => {
+			// 1) Precarga básica
+			try {
+				const cache = await caches.open(CACHE_NAME);
+				await cache.addAll(ASSETS_TO_CACHE);
+			} catch (_) { }
+
+			// 2) Intentar absorber parámetros de diseño desde el cliente activo
+			try {
+				const allClients = await self.clients.matchAll({ includeUncontrolled: true });
+
+				if (allClients && allClients.length > 0) {
+					// Enviamos solicitud
+					allClients[0].postMessage({ type: "REQUEST_DESIGN_PARAMS" });
+
+					// Esperamos una respuesta del cliente
+					const params = await new Promise((resolve) => {
+						const listener = (event) => {
+							if (event.data && event.data.type === "SEND_DESIGN_PARAMS") {
+								self.removeEventListener("message", listener);
+								resolve(event.data.payload);
+							}
+						};
+						self.addEventListener("message", listener);
+					});
+
+					// Si recibimos datos → guardarlos en API_CACHE
+					if (params) {
+						const apiCache = await caches.open(API_CACHE);
+						await apiCache.put(
+							"/api/design-parameters",
+							new Response(JSON.stringify(params), {
+								headers: { "Content-Type": "application/json" }
+							})
+						);
+						console.log("✔ SW absorbió parámetros iniciales desde localStorage.");
+					}
+				}
+			} catch (e) {
+				console.warn("⚠ No fue posible absorber parámetros iniciales:", e);
+			}
+		})()
 	);
 	// Activar inmediatamente, sin esperar reload
 	self.skipWaiting();

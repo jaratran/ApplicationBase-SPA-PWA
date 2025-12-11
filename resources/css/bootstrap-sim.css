@@ -52,7 +52,7 @@
 .card {
     border: 1px solid #ccc;
     border-radius: 0.375rem;
-    background-color: #fff;
+	background-color: white;
 }
 .card-header {
     font-weight: 400;

@@ -36,4 +36,19 @@ applyDesignParameters().then(() => {
 			.then(() => console.log("✔ Service Worker registrado"))
 			.catch(err => console.warn("⚠ Error registrando Service Worker:", err));
 	}
+
+	if (navigator.serviceWorker) {
+		navigator.serviceWorker.addEventListener("message", (event) => {
+			if (event.data && event.data.type === "REQUEST_DESIGN_PARAMS") {
+				const params = window.localStorage.getItem('designParameters');
+				if (params) {
+					event.source.postMessage({
+						type: "SEND_DESIGN_PARAMS",
+						payload: JSON.parse(params)
+					});
+				}
+			}
+		});
+	}
+
 })
