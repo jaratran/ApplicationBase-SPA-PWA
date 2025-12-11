@@ -52,7 +52,10 @@ let precache = [
 	"/config/default_emblema.png",
 	"/config/default_favicon.png",
 	"/config/default_fondo.png",
-	"/config/default_logo.png"
+	"/config/default_logo.png",
+
+	// ⭐ NUEVO: el SW necesita este archivo incluso offline
+	"/build/manifest-sw.js"
 ];
 
 // Recorrer todas las entradas del manifest
