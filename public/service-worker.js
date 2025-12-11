@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v40";
+const CACHE_NAME = "Calidad-v41";
 
 /**
  * --------------------------------------------------------------------------
@@ -57,6 +57,20 @@ const ASSETS_TO_CACHE = self.__PRECACHE;
  */
 const API_CACHE = "api-design-parameters";
 
+// Resolver para comunicación con cliente durante install y poder rescatar parámetros de diseño almacenados en el localStorage
+let pendingDesignParamsResolver = null;
+// Listener GLOBAL (Chrome ya no dará warning)
+self.addEventListener("message", (event) => {
+	if (
+		pendingDesignParamsResolver &&
+		event.data &&
+		event.data.type === "SEND_DESIGN_PARAMS"
+	) {
+		pendingDesignParamsResolver(event.data.payload);
+		pendingDesignParamsResolver = null; // limpiar
+	}
+});
+
 // ------------------------------------------------
 // INSTALACIÓN del Service Worker
 // ------------------------------------------------
@@ -77,17 +91,9 @@ self.addEventListener("install", (event) => {
 
 				if (allClients && allClients.length > 0) {
 					// Enviamos solicitud
-					allClients[0].postMessage({ type: "REQUEST_DESIGN_PARAMS" });
-
-					// Esperamos una respuesta del cliente
 					const params = await new Promise((resolve) => {
-						const listener = (event) => {
-							if (event.data && event.data.type === "SEND_DESIGN_PARAMS") {
-								self.removeEventListener("message", listener);
-								resolve(event.data.payload);
-							}
-						};
-						self.addEventListener("message", listener);
+						pendingDesignParamsResolver = resolve;
+						allClients[0].postMessage({ type: "REQUEST_DESIGN_PARAMS" });
 					});
 
 					// Si recibimos datos → guardarlos en API_CACHE
