@@ -19,9 +19,8 @@ class PanelController extends Controller
         try {
             $fechaFija = config('app.env_debug.dashboard_fecha_fija');
 
-            $hoy = config('app.env') === 'local' && $fechaFija
-                    ? $fechaFija
-                    : now()->toDateString();
+            // $hoy = config('app.env') === 'local' && $fechaFija ? $fechaFija : now()->toDateString();
+            $hoy = $fechaFija ? $fechaFija : now()->toDateString();
 
             $detallesPorVersion = ProgramaDiario::detallesPorFechaYVersion($hoy, config('constantes.VERSION_ULTIMA'));
             $ultimaVersion      = array_key_first($detallesPorVersion);
