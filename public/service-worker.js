@@ -7,7 +7,10 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v42";
+const CACHE_NAME = "Calidad-v44";
+
+// ⭐ Clave interna para cachear la APP_SHELL de la SPA (página resources\views\frontend.blade.php)
+const APP_SHELL = "/__app_shell__";
 
 /**
  * --------------------------------------------------------------------------
@@ -79,10 +82,25 @@ self.addEventListener("install", (event) => {
 
 	event.waitUntil(
 		(async () => {
-			// 1) Precarga básica
+			// 1) Precarga básica de assets del build
 			try {
 				const cache = await caches.open(CACHE_NAME);
 				await cache.addAll(ASSETS_TO_CACHE);
+
+				// ⭐ NUEVO PASO: precachear el HTML shell REAL de la SPA
+				try {
+					const resp = await fetch("/", { cache: "no-store" }); // fetch("/") obtiene el HTML REAL, no usamos: Request("/", { cache: "reload" })
+
+					if (resp && resp.ok) {
+						await cache.put(APP_SHELL, resp.clone());
+						console.log("✔ App Shell precacheado como", APP_SHELL);
+					} else {
+						console.warn("⚠ No se pudo obtener el App Shell desde la red");
+					}
+				} catch (e) {
+					console.warn("⚠ Error precacheando App Shell:", e);
+				}
+
 			} catch (_) { }
 
 			// 2) Intentar absorber parámetros de diseño desde el cliente activo
@@ -144,16 +162,30 @@ self.addEventListener("fetch", (event) => {
 	const url = new URL(req.url);
 
 	// ------------------------------
-	// 0) ¿Es navegación (document)? → Devolver SPA shell "/"
+	// 0) ¿Es navegación (document)? → devolver siempre el App Shell
 	// ------------------------------
 	if (req.mode === "navigate") {
-
 		event.respondWith(
-			caches.match("/").then(cached => {
-				return cached || fetch(req).catch(() => caches.match("/"));
-			})
-		);
+			(async () => {
+				const cache = await caches.open(CACHE_NAME);
 
+				// Intentar devolver el App Shell desde cache
+				const shell = await cache.match(APP_SHELL);
+				if (shell) return shell;
+
+				// Si no existe en cache → intentar red
+				try {
+					const networkResp = await fetch(req);
+					return networkResp;
+				} catch (e) {
+					// Fallback final
+					return new Response(
+						"<h1>Offline</h1><p>No se pudo cargar la aplicación.</p>",
+						{ headers: { "Content-Type": "text/html" }, status: 503 }
+					);
+				}
+			})()
+		);
 		return;
 	}
 
