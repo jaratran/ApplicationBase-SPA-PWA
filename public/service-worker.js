@@ -7,10 +7,25 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v44";
+const CACHE_NAME = "Calidad-v46";
 
-// ⭐ Clave interna para cachear la APP_SHELL de la SPA (página resources\views\frontend.blade.php)
-const APP_SHELL = "/__app_shell__";
+/**
+ * NOTA IMPORTANTE:
+ * Esta aplicación NO posee index.html.
+ * Laravel responde HTML dinámico (Blade) y Vue Router controla la navegación.
+ *
+ * Para garantizar arranque offline real (PWA instalada o navegador),
+ * se utiliza un app-shell.html estático, generado automáticamente desde
+ * manifest.json de Vite, y precacheado por el Service Worker.
+ *
+ * NO cachear rutas Blade dinámicas (/, /login).
+ * SI cachear el shell estático y los assets con hash.
+ *
+ * Esta decisión evita HTML vacío, mixed-content y fallos offline.
+ */
+
+// ⭐ Clave interna para cachear la APP_SHELL de la SPA estática mínima dedicada solo para offline bootstrap.
+const APP_SHELL = "/app-shell.html";
 
 /**
  * --------------------------------------------------------------------------
@@ -86,21 +101,6 @@ self.addEventListener("install", (event) => {
 			try {
 				const cache = await caches.open(CACHE_NAME);
 				await cache.addAll(ASSETS_TO_CACHE);
-
-				// ⭐ NUEVO PASO: precachear el HTML shell REAL de la SPA
-				try {
-					const resp = await fetch("/", { cache: "no-store" }); // fetch("/") obtiene el HTML REAL, no usamos: Request("/", { cache: "reload" })
-
-					if (resp && resp.ok) {
-						await cache.put(APP_SHELL, resp.clone());
-						console.log("✔ App Shell precacheado como", APP_SHELL);
-					} else {
-						console.warn("⚠ No se pudo obtener el App Shell desde la red");
-					}
-				} catch (e) {
-					console.warn("⚠ Error precacheando App Shell:", e);
-				}
-
 			} catch (_) { }
 
 			// 2) Intentar absorber parámetros de diseño desde el cliente activo
@@ -169,16 +169,16 @@ self.addEventListener("fetch", (event) => {
 			(async () => {
 				const cache = await caches.open(CACHE_NAME);
 
-				// Intentar devolver el App Shell desde cache
-				const shell = await cache.match(APP_SHELL);
-				if (shell) return shell;
-
-				// Si no existe en cache → intentar red
 				try {
+					// 1️⃣ Intentar SIEMPRE red primero
 					const networkResp = await fetch(req);
 					return networkResp;
+
 				} catch (e) {
-					// Fallback final
+					// 2️⃣ Si no hay red → usar app-shell
+					const shell = await cache.match(APP_SHELL);
+					if (shell) return shell;
+
 					return new Response(
 						"<h1>Offline</h1><p>No se pudo cargar la aplicación.</p>",
 						{ headers: { "Content-Type": "text/html" }, status: 503 }

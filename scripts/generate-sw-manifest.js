@@ -55,7 +55,10 @@ let precache = [
 	"/config/default_logo.png",
 
 	// ⭐ NUEVO: el SW necesita este archivo incluso offline
-	"/build/manifest-sw.js"
+	"/build/manifest-sw.js",
+
+	// ⭐ NUEVO: el SW necesita este archivo en modo offline
+	"/app-shell.html"
 ];
 
 // Recorrer todas las entradas del manifest
@@ -92,3 +95,39 @@ const outputPath = path.resolve(__dirname, "../public/build/manifest-sw.js");
 fs.writeFileSync(outputPath, output);
 
 console.log("manifest-sw.js generado correctamente (ESM).");
+
+// ---------------------------- ---------------------------- ---------------------------- ----------------------------
+// Generar app-shell.html con el entry real de Vite
+// ---------------------------- ---------------------------- ---------------------------- ----------------------------
+
+// Heurística: buscar una entry que tenga "isEntry": true
+// (Vite lo pone en el manifest si corresponde)
+const entryKey = Object.keys(manifest).find(k => manifest[k].isEntry);
+
+if (!entryKey) {
+	throw new Error("No se encontró ninguna entry (isEntry:true) en manifest.json");
+}
+
+const entryFile = "/build/" + manifest[entryKey].file;
+
+// Ojo: si tu build separa CSS, NO es necesario linkearlos aquí;
+// el JS ya los inyecta/carga según tu setup. Si prefieres, puedes agregarlos.
+const appShellHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calidad</title>
+</head>
+<body>
+  <div id="app">
+    <p>Sin conexión. Cargando aplicación…</p>
+  </div>
+  <script type="module" src="${entryFile}"></script>
+</body>
+</html>
+`;
+
+const appShellPath = path.resolve(__dirname, "../public/app-shell.html");
+fs.writeFileSync(appShellPath, appShellHtml, "utf8");
+console.log("app-shell.html generado correctamente:", entryFile);
