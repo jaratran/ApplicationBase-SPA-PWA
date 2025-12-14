@@ -57,8 +57,9 @@ let precache = [
 	// ⭐ NUEVO: el SW necesita este archivo incluso offline
 	"/build/manifest-sw.js",
 
-	// ⭐ NUEVO: el SW necesita este archivo en modo offline
-	"/app-shell.html"
+	// ⭐ NUEVO: el SW necesita estos archivos en modo offline
+	"/app-shell.html",
+	"/login"
 ];
 
 // Recorrer todas las entradas del manifest

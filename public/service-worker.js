@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v46";
+const CACHE_NAME = "Calidad-v47";
 
 /**
  * NOTA IMPORTANTE:
@@ -169,21 +169,16 @@ self.addEventListener("fetch", (event) => {
 			(async () => {
 				const cache = await caches.open(CACHE_NAME);
 
-				try {
-					// 1️⃣ Intentar SIEMPRE red primero
-					const networkResp = await fetch(req);
-					return networkResp;
+				// 1) ¿Existe la navegación exacta?
+				const exact = await cache.match(req);
+				if (exact) return exact;
 
-				} catch (e) {
-					// 2️⃣ Si no hay red → usar app-shell
-					const shell = await cache.match(APP_SHELL);
-					if (shell) return shell;
+				// 2) Fallback al app shell
+				const shell = await cache.match(APP_SHELL);
+				if (shell) return shell;
 
-					return new Response(
-						"<h1>Offline</h1><p>No se pudo cargar la aplicación.</p>",
-						{ headers: { "Content-Type": "text/html" }, status: 503 }
-					);
-				}
+				// 3) Último intento red
+				return fetch(req);
 			})()
 		);
 		return;
