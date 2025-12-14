@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v47";
+const CACHE_NAME = "Calidad-v48";
 
 /**
  * NOTA IMPORTANTE:
