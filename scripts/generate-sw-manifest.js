@@ -100,16 +100,35 @@ console.log("manifest-sw.js generado correctamente (ESM).");
 // ---------------------------- ---------------------------- ---------------------------- ----------------------------
 // Generar app-shell.html con el entry real de Vite
 // ---------------------------- ---------------------------- ---------------------------- ----------------------------
+const entryKey = "resources/js/frontend/main.js";
+const entry = manifest[entryKey];
 
-// Heurística: buscar una entry que tenga "isEntry": true
-// (Vite lo pone en el manifest si corresponde)
-const entryKey = Object.keys(manifest).find(k => manifest[k].isEntry);
-
-if (!entryKey) {
-	throw new Error("No se encontró ninguna entry (isEntry:true) en manifest.json");
+if (!entry || !entry.file || !entry.file.endsWith(".js")) {
+	throw new Error(`No se encontró un entry JS válido en manifest para: ${entryKey}`);
 }
 
-const entryFile = "/build/" + manifest[entryKey].file;
+const entryFile = "/build/" + entry.file; // -> /build/assets/main-XXXX.js
+
+// CSS globales de la app
+const cssBootstrap = manifest["resources/css/bootstrap-sim.css"];
+const cssApp = manifest["resources/css/app.css"];
+
+if (!cssBootstrap?.file) {
+	throw new Error("No se encontró bootstrap-sim.css en manifest.json");
+}
+
+if (!cssApp?.file) {
+	throw new Error("No se encontró app.css en manifest.json");
+}
+
+// CSS específico del entry de la SPA
+const entryCss = entry.css || [];
+
+const cssLinks = [
+	`<link rel="stylesheet" href="/build/${cssBootstrap.file}">`,
+	`<link rel="stylesheet" href="/build/${cssApp.file}">`,
+	...entryCss.map(css => `<link rel="stylesheet" href="/build/${css}">`)
+].join("\n  ");
 
 // Ojo: si tu build separa CSS, NO es necesario linkearlos aquí;
 // el JS ya los inyecta/carga según tu setup. Si prefieres, puedes agregarlos.
@@ -119,11 +138,14 @@ const appShellHtml = `<!DOCTYPE html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calidad</title>
+
+  ${cssLinks}
 </head>
 <body>
   <div id="app">
     <p>Sin conexión. Cargando aplicación…</p>
   </div>
+
   <script type="module" src="${entryFile}"></script>
 </body>
 </html>
