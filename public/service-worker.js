@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v54";
+const CACHE_NAME = "Calidad-v55";
 
 /**
  * NOTA IMPORTANTE:
@@ -259,25 +259,25 @@ self.addEventListener("fetch", (event) => {
 				const cached = await cache.match(req);
 
 				// A) Intentar actualizar desde red (si hay conexión)						 - DESCOMENTAR ACA
-				// const networkFetch = fetch(req)
-				// 	.then(response => {
-				// 		if (response.ok && response.status === 200) {
-				// 			cache.put(req, response.clone());
-				// 		}
-				// 		return response;
-				// 	})
-				// 	.catch(() => null);
+				const networkFetch = fetch(req)
+					.then(response => {
+						if (response.ok && response.status === 200) {
+							cache.put(req, response.clone());
+						}
+						return response;
+					})
+					.catch(() => null);
 
 				// Si hay cache → devolverlo inmediatamente
 				if (cached) {
 					// B) Mientras tanto actualizamos en background						 	- DESCOMENTAR ACA
-					// networkFetch.then(() => { });
+					networkFetch.then(() => { });
 					return cached;
 				}
 
 				// C) Si no hay cache → esperar red o fallback						 		- DESCOMENTAR ACA
-				// const net = await networkFetch;
-				// if (net) return net;
+				const net = await networkFetch;
+				if (net) return net;
 
 				// Fallbacks
 				if (url.pathname.includes("emblema"))
