@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v55";
+const CACHE_NAME = "Calidad-v56";
 
 /**
  * NOTA IMPORTANTE:
@@ -303,24 +303,16 @@ self.addEventListener("fetch", (event) => {
 	// 6) Para Assets locales (JS/CSS/img) estáticos del mismo origen
 	// ------------------------------
 	event.respondWith(
-		caches.match(req).then(async cached => {
+		(async () => {
+			const cached = await caches.match(req);
 			if (cached) return cached;
 
 			try {
-				const networkResp = await fetch(req);
-				return networkResp;
-
-			} catch (e) {
-				// Si es asset de build que no existe en cache,
-				// devolvemos el shell para asegurar la carga del SPA
-				if (url.pathname.startsWith("/build/")) {
-					return caches.match("/");
-				}
-
-				// fallback genérico
-				return caches.match("/");
+				return await fetch(req);
+			} catch {
+				return new Response("", { status: 404 });
 			}
-		})
+		})()
 	);
 
 });
