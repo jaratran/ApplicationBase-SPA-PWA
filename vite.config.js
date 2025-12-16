@@ -1,7 +1,4 @@
-// vite.config.js
-
 import { defineConfig } from 'vite'
-import laravel                  from 'laravel-vite-plugin'
 import vue                      from '@vitejs/plugin-vue'
 import tailwindcss              from '@tailwindcss/vite'
 import fs                       from 'fs'
@@ -33,23 +30,23 @@ function copyServiceWorker() {
 }
 
 export default defineConfig({
-	publicDir: 'public',    // 👈 asegúrate que Vite copie public/ completo
+	root: 'public',              // 👈 CLAVE
+	base: '/build/',             // 👈 rutas absolutas
+	publicDir: false,            // 👈 ya estamos en public
 
 	plugins: [
-        vue(),
-        laravel({
-			input: [
-						'resources/css/bootstrap-sim.css',
-                        'resources/css/app.css',
-                        'resources/js/app.js',
-                        'resources/js/frontend/main.js',
-                    ],
-            refresh: true,
-        }),
-        tailwindcss(), // 👈 vuelve a activarse
-		copyServiceWorker(),   // 👈 agrega el plugin de copia
-
+		vue(),
+		tailwindcss(),			// 👈 vuelve a activarse
+		copyServiceWorker()		// 👈 agrega el plugin de copia
 	],
+
+	build: {
+		outDir: 'build',            // → public/build
+		emptyOutDir: true,
+		rollupOptions: {
+			input: '/index.html'      // 👈 ENTRY REAL
+		}
+	},
 
 	/**
 	 * ⚠️ Sección SOLO para modo desarrollo (npm run dev)
@@ -63,5 +60,4 @@ export default defineConfig({
 			cert: fs.readFileSync('C:/xampp-8.2.12/apache/conf/ssl.crt/calidad.crt'),
 		},
 	},
-
 })

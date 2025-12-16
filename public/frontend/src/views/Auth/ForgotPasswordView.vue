@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/Auth/ForgotPasswordView.vue -->
-
 <template>
 	<div class="flex flex-row flex-wrap min-h-screen items-center">
 		<!-- Columna izquierda -->
@@ -66,7 +64,7 @@
 	import { useAlertStore } from '../../stores/alert'
 	import { useRouter } from 'vue-router'
 	import api from '../../services/api'						// tu instancia Axios API
-	import '../../../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
+	import '../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
 
 	const router = useRouter()
 	const alert = useAlertStore()

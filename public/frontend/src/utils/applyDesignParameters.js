@@ -1,5 +1,3 @@
-// resources/js/frontend/src/utils/applyDesignParameters.js
-
 /**
  * Convierte un color HEX (#RRGGBB) a formato RGB (r,g,b)
  * (EcoRuta hacía esto indirectamente en Blade al generar RGB desde PHP)
@@ -26,39 +24,27 @@ export async function applyDesignParameters() {
 	try {
 		// Intentamos obtener desde red o desde Service Worker
 		const response = await fetch('/api/design-parameters').catch(() => null);
-
-		if (response && response.ok) {
-			// Caso A: estamos online → OK
-			data = await response.json();
-
-			// ⭐ NUEVO: Guardar instantáneamente la versión válida en localStorage
-			const canUseLocalStorage = typeof window !== 'undefined' &&								// Helper para saber si podemos usar localStorage
-										typeof window.localStorage !== 'undefined';					// y así comunicar parámetros de diseño a ServiceWorker
-
-			if (canUseLocalStorage) {
-				const isFirstTime = !window.localStorage.getItem('designParameters');				// Helper para saber si previamente no hemos pasado por acá
-
-				if (isFirstTime) {
-					try {
-						window.localStorage.setItem('designParameters', JSON.stringify(data));
-					}
-					catch (e) {
-						console.warn('⚠️ No se pudieron guardar los parámetros de diseño en localStorage:', e);
-					}
-				}
-			}
-
-		} else if (response) {
-			// Caso B: estamos offline → SW devolvió un Response válido
-			data = await response.json();
-
-		} else {
+		if (!response) {
 			throw new Error("Sin conexión y sin fallback SW");
+		}
+
+		data = await response.json();
+
+		// Guardar en localStorage solo la primera vez
+		const canUseLocalStorage = typeof window !== 'undefined' &&								// Helper para saber si podemos usar localStorage
+									typeof window.localStorage !== 'undefined';					// y así comunicarle al ServiceWorkerlos parámetros de diseño
+
+		if (canUseLocalStorage && !window.localStorage.getItem('designParameters')) {			// Si podemos usar el localStorage y aún no guardamos designParameters ...
+			try {
+				window.localStorage.setItem('designParameters', JSON.stringify(data));
+			} catch (e) {
+				console.warn('⚠️ No se pudieron guardar los parámetros de diseño en localStorage:', e);
+			}
 		}
 
 	} catch (error) {
 		console.error("⚠️ No se pudieron obtener parámetros de diseño:", error);
-		return;   // evitar aplicar estilos vacíos
+		return; // evitar aplicar estilos vacíos
 	}
 
 	// ====================================================

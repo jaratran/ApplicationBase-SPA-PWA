@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/LoginView.vue -->
-
 <template>
 	<div class="flex flex-row flex-wrap min-h-screen items-center">
 		<!-- Columna izquierda -->
@@ -80,8 +78,6 @@
 	import { useAlertStore } from '../stores/alert'
 	import { useAuthStore } from '../stores/auth'
 	import { useRouter } from 'vue-router'
-
-	import '../../../../css/auth.css'										// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
 
 	const alert = useAlertStore()
 	const auth = useAuthStore()

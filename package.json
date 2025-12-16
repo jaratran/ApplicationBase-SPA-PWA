@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build && node scripts/generate-sw-manifest.js",
-        "dev": "vite"
+		"dev": "vite",
+		"build": "vite build"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.14",

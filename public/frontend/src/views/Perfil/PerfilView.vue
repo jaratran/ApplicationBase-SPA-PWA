@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/Perfil/PerfilView.vue -->
-
 <template>
 	<div class="container">
 		<div v-if="auth.perfil">

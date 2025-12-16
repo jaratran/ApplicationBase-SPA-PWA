@@ -1,21 +1,25 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 
-// Este Fallback es vestigio de cuando era aplicación Laravel pura
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-// Shell principal para la SPA
+// Entry point estático de la SPA
 Route::get('/', function () {
-    return view('frontend');
+    return response(
+        File::get(public_path('/build/index.html')),
+        200,
+        ['Content-Type' => 'text/html']
+    );
 });
 
-// SPA Fallback — cualquier ruta que no sea /api/* carga la aplicación Vue
+// SPA Fallback — cualquier ruta que no sea /api/* carga index.html
 Route::get('/{any}', function () {
-    return view('frontend'); // Blade que carga el SPA
-})->where('any', '^(?!api).*$');
+    return response(
+        File::get(public_path('build/index.html')),
+        200,
+        ['Content-Type' => 'text/html']
+    );
+})->where('any', '^(?!api|assets|build|config|favicon\.ico).*$');
 
-// Linea para usar cuando la aplicación creazca o si más adelante agregamos Debugbar o Telescope.
+// Linea para usar cuando la aplicación crezca o si más adelante agregamos Debugbar o Telescope.
 //})->where('any', '^(?!api|storage|telescope|_debugbar).*$');

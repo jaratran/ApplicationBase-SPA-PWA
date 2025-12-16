@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/Auth/ResetPasswordView.vue -->
-
 <template>
 	<div class="flex flex-row flex-wrap min-h-screen items-center">
 		<!-- Columna izquierda -->
@@ -13,7 +11,7 @@
 
 				<!-- Título principal -->
 				<div class="card-login-header bg-transparent border-0 text-xl" :style="{ color: getPrimaryColor() }">
-					Restablecer Contraseña
+					Actualizar Contraseña
 				</div>
 
 				<div class="globoPasswordMoviles">
@@ -33,7 +31,7 @@
 					<!-- 🔹 ALERTAS AL ESTILO EcoRuta -->
 					<AlertSystem />
 
-					<form @submit.prevent="submitResetPassword">
+					<form @submit.prevent="submitPassword">
 						<!-- PASSWORD 1 + OJO -->
 						<div class="mb-4">
 							<label class="form-label" for="password">Ingrese su nueva Contraseña</label>
@@ -70,10 +68,18 @@
 						<div class="grid grid-cols-12 gap-3 mt-4">
 
 							<!-- Botón principal (col-12) -->
-							<div class="col-span-12">
+							<div class="col-span-8">
 								<button type="submit" :disabled="loading" class="btn btn-primary w-full">
 									<i class="fa fa-edit"></i>
-									{{ loading ? 'Restableciendo...' : 'Restablezca Contraseña' }}
+									{{ loading ? 'Actualizando...' : 'Actualice Contraseña' }}
+								</button>
+							</div>
+
+							<!-- Botón cancelar (col-4) -->
+							<div class="col-span-4">
+								<button type="button" class="btn btn-secondary w-full" @click="router.push('/perfil')">
+									<i class="fa fa-times"></i>
+									Cancelar
 								</button>
 							</div>
 
@@ -107,13 +113,12 @@
 <script setup>
 	import { ref, computed, onMounted } from 'vue'
 	import { useAlertStore } from '../../stores/alert'
-	import { useRoute, useRouter } from 'vue-router'
+	import { useRouter } from 'vue-router'
 
 	import api from '../../services/api'						// tu instancia Axios API
 
-	import '../../../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
+	import '../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
 
-	const route = useRoute()									// ← aquí vienen token y email
 	const router = useRouter()									// ← navegar después del éxito
 	const alert = useAlertStore()
 
@@ -200,47 +205,35 @@
 		return true
 	}
 
-	const submitResetPassword = async () => {
+	const submitPassword = async () => {
 		loading.value = true
 		alert.prepare()
 
-		const token = route.params.token
-		const email = route.query.email
-
-		// 1. Validación del enlace (salida temprana)
-		if (!token || !email) {
-			alert.show("El enlace de restablecimiento no es válido.", 'error', true)
-			loading.value = false
-			return router.push('/login')
-		}
-
-		// 2. Validación del formulario (salida temprana)
+		// 1. Validación del formulario (salida temprana)
 		if (!validarFormulario()) {
 			loading.value = false
 			return
 		}
 
 		try {
-			// 3. Construcción del payload
+			// 2. Construcción del payload
 			const payload = {
-				token,
-				email,
 				password: passwordNew.value,
-				password_confirmation: passwordConf.value
+				password_confirmation: passwordConf.value,
 			}
 
-			// 4. Llamada API
-			await api.post('/reset-password', payload)
+			// 3. Llamada API
+			await api.post('/perfil/password', payload)
 
-			// 5. Éxito: alerta persistente + navegación
-			alert.show( "Contraseña actualizada correctamente. Ahora puede iniciar sesión.", 'success', true )
-			return router.push('/login')
+			// 4. Éxito: alerta persistente + navegación
+			alert.show( "Contraseña actualizada correctamente.", 'success', true )
+			return router.push('/perfil')
 
 		} catch (error) {
 			const msg = error.response?.data?.message || 'No se pudo actualizar la contraseña. Intente nuevamente.'
 			console.error(msg)
-			alert.show(msg, 'error', true)																	// Mostrar alerta local SI hubo error
-			return router.push('/login')
+			alert.show(msg, 'error')																	// Mostrar alerta local SI hubo error
+			return
 
 		} finally {
 			// 6. SIEMPRE se ejecuta (excepto return temprano)

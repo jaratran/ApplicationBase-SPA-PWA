@@ -7,49 +7,20 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v56";
+const CACHE_NAME = "Calidad-v72";
 
-/**
- * NOTA IMPORTANTE:
- * Esta aplicación NO posee index.html.
- * Laravel responde HTML dinámico (Blade) y Vue Router controla la navegación.
- *
- * Para garantizar arranque offline real (PWA instalada o navegador),
- * se utiliza un app-shell.html estático, generado automáticamente desde
- * manifest.json de Vite, y precacheado por el Service Worker.
- *
- * NO cachear rutas Blade dinámicas (/, /login).
- * SI cachear el shell estático y los assets con hash.
- *
- * Esta decisión evita HTML vacío, mixed-content y fallos offline.
- */
+const APP_SHELL = "/build/index.html";
 
-// ⭐ Clave interna para cachear la APP_SHELL de la SPA estática mínima dedicada solo para offline bootstrap.
-const APP_SHELL = "/app-shell.html";
+// + cache automático de assets desde fetch
+const ASSETS_TO_CACHE = [
+							'/build/index.html',
+							'/manifest.json',
 
-/**
- * --------------------------------------------------------------------------
- * Precarga automática del manifest de Vite para el Service Worker
- * --------------------------------------------------------------------------
- * El archivo "manifest-sw.js" es generado automáticamente por el script:
- *      scripts/generate-sw-manifest.js
- * después de cada build de Vite.
- *
- * Dicho archivo expone un arreglo global:
- *      self.__PRECACHE = [ ... ];
- * que contiene archivos esenciales:
- *   - El shell base de la SPA ("/")
- *   - Íconos y recursos esenciales de la PWA
- *   - Todos los bundles JS/CSS generados por Vite, incluidos los que poseen
- *     nombres con hash dinámico y los importados por otros módulos.
- *
- * Al cargarlo aquí mediante importScripts(), el Service Worker obtiene la
- * lista completa y actualizada de archivos que deben precachearse. Luego,
- * ASSETS_TO_CACHE utiliza ese arreglo para garantizar que el SW instale
- * siempre los assets correctos sin necesidad de mantener esta lista a mano.
- */
-importScripts("/build/manifest-sw.js");
-const ASSETS_TO_CACHE = self.__PRECACHE;
+							'/config/default_emblema.png',
+							'/config/default_fondo.png',
+							'/config/default_logo.png',
+							'/config/default_favicon.png'
+						]
 
 /**
  * --------------------------------------------------------------------------
@@ -162,30 +133,36 @@ self.addEventListener("fetch", (event) => {
 	const url = new URL(req.url);
 
 	// ------------------------------
-	// 0) ¿Es navegación (document)? → devolver siempre el App Shell
+	// 0) Ignorar recursos de terceros (Google Fonts, CDNJS, etc.) - Evita errores de consola causados por SW
+	// ------------------------------
+	if (url.origin !== self.location.origin) {
+		return; // Dejamos que el navegador falle tranquilo si está offline
+	}
+
+	// ------------------------------
+	// 1) ¿Es navegación (document)? → devolver siempre el App Shell
 	// ------------------------------
 	if (req.mode === "navigate") {
 		event.respondWith(
 			(async () => {
 				const cache = await caches.open(CACHE_NAME);
 
+				// 1️⃣ Siempre servir el index.html cacheado
+				const cachedShell = await cache.match(APP_SHELL);
+				if (cachedShell) return cachedShell;
+
+				// 2️⃣ Solo si NO existe cache (primer load online)
 				try {
-					// 1️⃣ Siempre intentar red primero
 					const networkResp = await fetch(req);
+					if (networkResp.ok) {
+						await cache.put(APP_SHELL, networkResp.clone());
+					}
 					return networkResp;
 
-				} catch (e) {
-					// 2️⃣ Offline → servir app-shell
-					const shell = await cache.match(APP_SHELL);
-					if (shell) return shell;
-
-					// 3️⃣ Fallback extremo
+				} catch {
 					return new Response(
 						"<!DOCTYPE html><html><body><h1>Offline</h1><p>No se pudo cargar la aplicación.</p></body></html>",
-						{
-							headers: { "Content-Type": "text/html" },
-							status: 503
-						}
+						{ headers: { "Content-Type": "text/html" }, status: 503 }
 					);
 				}
 			})()
@@ -194,17 +171,53 @@ self.addEventListener("fetch", (event) => {
 	}
 
 	// ------------------------------
-	// 1) FAVICON offline
+	// 2) Imágenes dinámicas de estilo y favicon
 	// ------------------------------
-	if (url.pathname === "/favicon.ico") {
+	if (url.pathname.startsWith("/config/")) {
 		event.respondWith(
-			caches.match("/config/default_favicon.png")
+			caches.open(CACHE_NAME).then(async cache => {
+
+				const cached = await cache.match(req);
+
+				// A) Network-first con actualización de cache
+				const networkFetch = fetch(req)
+					.then(response => {
+						if (response.ok && response.status === 200) {
+							cache.put(req, response.clone());
+						}
+						return response;
+					})
+					.catch(() => null);
+
+				// B) Si hay cache → devolverlo inmediatamente
+				if (cached) {
+					networkFetch.then(() => { });
+					return cached;
+				}
+
+				// C) Si no hay cache → intentar red
+				const net = await networkFetch;
+				if (net) return net;
+
+				// Fallback semántico (SIEMPRE disponible por precache)
+				if (url.pathname.includes("emblema"))
+					return cache.match("/config/default_emblema.png");
+
+				if (url.pathname.includes("fondo"))
+					return cache.match("/config/default_fondo.png");
+
+				if (url.pathname.includes("favicon"))
+					return cache.match("/config/default_favicon.png");
+
+				return cache.match("/config/default_logo.png");
+			})
 		);
-		return;
+
+		return; // IMPORTANTE
 	}
 
 	// ------------------------------
-	// 2) API design-parameters (EXCEPCIÓN de CACHEAR API)
+	// 3) API design-parameters (EXCEPCIÓN de CACHEAR API)
 	// ------------------------------
 	if (url.pathname.startsWith("/api/design-parameters")) {
 		const cleanUrl = "/api/design-parameters";
@@ -236,71 +249,14 @@ self.addEventListener("fetch", (event) => {
 	}
 
 	// ------------------------------
-	// 3) Ignorar todas las APIs normales - No cachear otras APIs
+	// 4) Ignorar todas las APIs normales - No cachear otras APIs
 	// ------------------------------
 	if (url.pathname.startsWith("/api/")) {
 		return;
 	}
 
 	// ------------------------------
-	// 4) Ignorar recursos de terceros (Google Fonts, CDNJS, etc.) - Evita errores de consola causados por SW
-	// ------------------------------
-	if (url.origin !== self.location.origin) {
-		return; // Dejamos que el navegador falle tranquilo si está offline
-	}
-
-	// ------------------------------
-	// 5) Fallback para imágenes dinámicas no cacheadas
-	// ------------------------------
-	if (url.pathname.startsWith("/config/")) {
-		event.respondWith(
-			caches.open(CACHE_NAME).then(async cache => {
-
-				const cached = await cache.match(req);
-
-				// A) Intentar actualizar desde red (si hay conexión)						 - DESCOMENTAR ACA
-				const networkFetch = fetch(req)
-					.then(response => {
-						if (response.ok && response.status === 200) {
-							cache.put(req, response.clone());
-						}
-						return response;
-					})
-					.catch(() => null);
-
-				// Si hay cache → devolverlo inmediatamente
-				if (cached) {
-					// B) Mientras tanto actualizamos en background						 	- DESCOMENTAR ACA
-					networkFetch.then(() => { });
-					return cached;
-				}
-
-				// C) Si no hay cache → esperar red o fallback						 		- DESCOMENTAR ACA
-				const net = await networkFetch;
-				if (net) return net;
-
-				// Fallbacks
-				if (url.pathname.includes("emblema"))
-					return cache.match("/config/default_emblema.png");
-
-				if (url.pathname.includes("fondo"))
-					return cache.match("/config/default_fondo.png");
-
-				if (url.pathname.includes("favicon"))
-					return cache.match("/config/default_favicon.png");
-
-				if (url.pathname.includes("logo"))
-					return cache.match("/config/default_logo.png");
-
-				return cache.match("/config/default_logo.png");
-			})
-		);
-
-		return; // IMPORTANTE
-	}
-
-	// ------------------------------
-	// 6) Para Assets locales (JS/CSS/img) estáticos del mismo origen
+	// 5) Para Assets locales (JS/CSS/img) estáticos del mismo origen
 	// ------------------------------
 	event.respondWith(
 		(async () => {

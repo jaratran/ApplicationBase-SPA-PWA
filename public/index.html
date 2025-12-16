@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Viewport estilo app -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Calidad</title>
+
+	<!-- PWA -->
+	<link rel="manifest" href="/manifest.json">
+	<meta name="theme-color" content="#0f766e">
+
+	<!-- Tipografía (puede quedar CDN por ahora) -->
+	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body class="antialiased booting">
+
+	<div id="app"></div>
+
+	<!--
+		⚠️ IMPORTANTE
+		Este script será resuelto por Vite en build.
+		En desarrollo Vite lo inyecta.
+		En producción apuntará a /build/assets/main-XXXX.js
+	-->
+	<script type="module" src="/frontend/main.js"></script>
+
+</body>
+
+</html>

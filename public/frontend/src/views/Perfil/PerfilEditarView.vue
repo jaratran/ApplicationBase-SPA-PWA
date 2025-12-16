@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/Perfil/PerfilEditarView.vue -->
-
 <template>
 	<div class="container">
 		<div class="card mb-4">

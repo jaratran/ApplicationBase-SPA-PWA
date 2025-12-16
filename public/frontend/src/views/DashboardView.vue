@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/views/DashboardView.vue -->
-
 <template>
 	<div class="container">
 		<!-- 🧭 Título principal -->
