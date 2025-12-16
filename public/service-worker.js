@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v74";
+const CACHE_NAME = "Calidad-v75";
 
 const APP_SHELL = "/build/index.html";
 
@@ -73,33 +73,6 @@ self.addEventListener("install", (event) => {
 				const cache = await caches.open(CACHE_NAME);
 				await cache.addAll(ASSETS_TO_CACHE);
 			} catch (_) { }
-
-			// 2) Intentar absorber parámetros de diseño desde el cliente activo
-			try {
-				const allClients = await self.clients.matchAll({ includeUncontrolled: true });
-
-				if (allClients && allClients.length > 0) {
-					// Enviamos solicitud
-					const params = await new Promise((resolve) => {
-						pendingDesignParamsResolver = resolve;
-						allClients[0].postMessage({ type: "REQUEST_DESIGN_PARAMS" });
-					});
-
-					// Si recibimos datos → guardarlos en API_CACHE
-					if (params) {
-						const apiCache = await caches.open(API_CACHE);
-						await apiCache.put(
-							"/api/design-parameters",
-							new Response(JSON.stringify(params), {
-								headers: { "Content-Type": "application/json" }
-							})
-						);
-						console.log("✔ SW absorbió parámetros iniciales desde localStorage.");
-					}
-				}
-			} catch (e) {
-				console.warn("⚠ No fue posible absorber parámetros iniciales:", e);
-			}
 		})()
 	);
 	// Activar inmediatamente, sin esperar reload
