@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
 		"dev": "vite",
-		"build": "vite build"
+		"build": "vite build && node scripts/generate-sw-manifest.js"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.14",

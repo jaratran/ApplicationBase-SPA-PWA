@@ -7,20 +7,44 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v75";
+const CACHE_NAME = "Calidad-v79";
 
 const APP_SHELL = "/build/index.html";
 
-// + cache automático de assets desde fetch
-const ASSETS_TO_CACHE = [
-							'/build/index.html',
-							'/manifest.json',
+/**
+ * --------------------------------------------------------------------------
+ * Precarga automática del manifest de Vite para el Service Worker
+ * --------------------------------------------------------------------------
+ * El archivo "manifest-sw.js" es generado automáticamente por el script:
+ *      scripts/generate-sw-manifest.js
+ * después de cada build de Vite.
+ *
+ * Dicho archivo expone un arreglo global:
+ *      self.__PRECACHE = [ ... ];
+ * que contiene archivos esenciales:
+ *   - El shell base de la SPA ("/")
+ *   - Íconos y recursos esenciales de la PWA
+ *   - Todos los bundles JS/CSS generados por Vite, incluidos los que poseen
+ *     nombres con hash dinámico y los importados por otros módulos.
+ *
+ * Al cargarlo aquí mediante importScripts(), el Service Worker obtiene la
+ * lista completa y actualizada de archivos que deben precachearse. Luego,
+ * ASSETS_TO_CACHE utiliza ese arreglo para garantizar que el SW instale
+ * siempre los assets correctos sin necesidad de mantener esta lista a mano.
+ */
+importScripts("/build/manifest-sw.js");
+const ASSETS_TO_CACHE = self.__PRECACHE;
 
-							'/config/default_emblema.png',
-							'/config/default_fondo.png',
-							'/config/default_logo.png',
-							'/config/default_favicon.png'
-						]
+// // + cache automático de assets desde fetch
+// const ASSETS_TO_CACHE = [
+// 							'/build/index.html',
+// 							'/manifest.json',
+
+// 							'/config/default_emblema.png',
+// 							'/config/default_fondo.png',
+// 							'/config/default_logo.png',
+// 							'/config/default_favicon.png'
+// 						]
 
 /**
  * --------------------------------------------------------------------------
@@ -120,13 +144,15 @@ self.addEventListener("fetch", (event) => {
 			(async () => {
 				const cache = await caches.open(CACHE_NAME);
 
-				// 1️⃣ Siempre servir el index.html cacheado
+				// 1️⃣ Intentar resolver SIEMPRE el app-shell cacheado
 				const cachedShell = await cache.match(APP_SHELL);
-				if (cachedShell) return cachedShell;
+				if (cachedShell) {
+					return cachedShell;
+				}
 
-				// 2️⃣ Solo si NO existe cache (primer load online)
+				// 2️⃣ Fallback a red (solo primer load online)
 				try {
-					const networkResp = await fetch(req);
+					const networkResp = await fetch(APP_SHELL);
 					if (networkResp.ok) {
 						await cache.put(APP_SHELL, networkResp.clone());
 					}

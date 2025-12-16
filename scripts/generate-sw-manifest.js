@@ -37,16 +37,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Ruta absoluta al manifest.json generado por Vite
-const manifestPath = path.resolve(__dirname, "../public/build/manifest.json");
+const manifestPath = path.resolve(__dirname, "../public/build/.vite/manifest.json");
+
+if (!fs.existsSync(manifestPath)) {
+	throw new Error("No se encontró build/.vite/manifest.json. ¿Está activado build.manifest en Vite?");
+}
 
 // Leer y parsear el manifest
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
 let precache = [
-	"/",
+	"/build/index.html",
 	"/manifest.json",
-	"/config/pwa/icon-192.png",
-	"/config/pwa/icon-512.png",
 
 	// PNG base
 	"/config/default_emblema.png",
@@ -54,12 +56,12 @@ let precache = [
 	"/config/default_fondo.png",
 	"/config/default_logo.png",
 
-	// ⭐ NUEVO: el SW necesita este archivo incluso offline
-	"/build/manifest-sw.js",
+	// PNG PWA
+	"/config/pwa/icon-192.png",
+	"/config/pwa/icon-512.png",
 
-	// ⭐ NUEVO: el SW necesita estos archivos en modo offline
-	"/app-shell.html",
-	"/login"
+	// El Service Worker necesita este archivo incluso offline
+	"/build/manifest-sw.js"
 ];
 
 // Recorrer todas las entradas del manifest
@@ -96,61 +98,3 @@ const outputPath = path.resolve(__dirname, "../public/build/manifest-sw.js");
 fs.writeFileSync(outputPath, output);
 
 console.log("manifest-sw.js generado correctamente (ESM).");
-
-// ---------------------------- ---------------------------- ---------------------------- ----------------------------
-// Generar app-shell.html con el entry real de Vite
-// ---------------------------- ---------------------------- ---------------------------- ----------------------------
-const entryKey = "resources/js/frontend/main.js";
-const entry = manifest[entryKey];
-
-if (!entry || !entry.file || !entry.file.endsWith(".js")) {
-	throw new Error(`No se encontró un entry JS válido en manifest para: ${entryKey}`);
-}
-
-const entryFile = "/build/" + entry.file; // -> /build/assets/main-XXXX.js
-
-// CSS globales de la app
-const cssBootstrap = manifest["resources/css/bootstrap-sim.css"];
-const cssApp = manifest["resources/css/app.css"];
-
-if (!cssBootstrap?.file) {
-	throw new Error("No se encontró bootstrap-sim.css en manifest.json");
-}
-
-if (!cssApp?.file) {
-	throw new Error("No se encontró app.css en manifest.json");
-}
-
-// CSS específico del entry de la SPA
-const entryCss = entry.css || [];
-
-const cssLinks = [
-	`<link rel="stylesheet" href="/build/${cssBootstrap.file}">`,
-	`<link rel="stylesheet" href="/build/${cssApp.file}">`,
-	...entryCss.map(css => `<link rel="stylesheet" href="/build/${css}">`)
-].join("\n  ");
-
-// Ojo: si tu build separa CSS, NO es necesario linkearlos aquí;
-// el JS ya los inyecta/carga según tu setup. Si prefieres, puedes agregarlos.
-const appShellHtml = `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calidad</title>
-
-  ${cssLinks}
-</head>
-<body>
-  <div id="app">
-    <p>Sin conexión. Cargando aplicación…</p>
-  </div>
-
-  <script type="module" src="${entryFile}"></script>
-</body>
-</html>
-`;
-
-const appShellPath = path.resolve(__dirname, "../public/app-shell.html");
-fs.writeFileSync(appShellPath, appShellHtml, "utf8");
-console.log("app-shell.html generado correctamente:", entryFile);

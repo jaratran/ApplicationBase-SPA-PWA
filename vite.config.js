@@ -41,6 +41,7 @@ export default defineConfig({
 	],
 
 	build: {
+		manifest: true,
 		outDir: 'build',            // → public/build
 		emptyOutDir: true,
 		rollupOptions: {
