@@ -48,6 +48,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
 let precache = [
 	"/build/index.html",
+	"/offline.html",          // 👈 NUEVO (clave)
 	"/manifest.json",
 
 	// PNG base
