@@ -1,8 +1,7 @@
-// resources/js/frontend/src/stores/auth.js
-
 import { defineStore } from 'pinia'
-import api, { sanctum } from '../services/api'
-import router from '../router'
+import api, { sanctum } from '@/services/api'
+import { useNetworkStore } from './network'
+import { useOfflineIdentityStore } from './offlineIdentity'
 
 export const useAuthStore = defineStore('auth', {
 	state: () => ({
@@ -30,6 +29,13 @@ export const useAuthStore = defineStore('auth', {
 		 *  LOGIN
 		 *  ========================== */
 		async login(email, password) {
+			const network = useNetworkStore()
+
+			if (!network.isOnline) {
+				this.error = 'No hay conexión disponible.'
+				return false
+			}
+
 			this.loading = true
 			this.error = null
 
@@ -46,6 +52,10 @@ export const useAuthStore = defineStore('auth', {
 
 				// Si ambos existen, login exitoso → retornamos true
 				if (user && perfil) {
+					// Activar modo offline tras login ONLINE
+					const offlineIdentity = useOfflineIdentityStore()
+					offlineIdentity.enableFromUser(user)
+
 					return true
 				}
 
@@ -112,6 +122,9 @@ export const useAuthStore = defineStore('auth', {
 				return false
 
 			} finally {
+				const offlineIdentity = useOfflineIdentityStore()
+				offlineIdentity.clear()
+
 				this.user = null
 				this.perfil = null
 				this.loading = false

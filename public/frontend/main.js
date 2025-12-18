@@ -7,9 +7,12 @@ import { createApp } from 'vue'
 
 import axios from 'axios'                                                           // AXIOS
 import { createPinia } from 'pinia'                                                 // manejo de estado
+import { useNetworkStore } from './src/stores/network'								// Manejo del estado de conectividad
 import router from './src/router'                                                   // navegación front para PWA
 
 import AlertSystem from './src/components/AlertSystem.vue'							// componente global para alertas del sistema con estilo de alerts de EcoRuta
+
+import { useOfflineIdentityStore } from './src/stores/offlineIdentity'				// Persistencia mínima de la identidad del usuario (offline-enabled)
 import { applyDesignParameters } from './src/utils/applyDesignParameters'           // consulta tu API para obtener parámetros de diseño
 
 import App from './src/App.vue'                                                     // Monta App principal
@@ -22,7 +25,28 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'				// Confi
 
 // Nuevo patrón (PWA-first) - Vue debe montar SIEMPRE
 const app = createApp(App)
-app.use(createPinia())
+
+const pinia = createPinia()
+app.use(pinia)
+
+// Store de red inicializado explícitamente con pinia
+const networkStore = useNetworkStore(pinia)
+
+// Persistencia mínima de la identidad del usuario
+const offlineIdentity = useOfflineIdentityStore(pinia)
+offlineIdentity.loadFromStorage()
+
+
+// Inicializar listeners globales para manejar el estado de la conexión
+window.addEventListener('online', () => {
+	console.log('[network] online')
+	networkStore.setOnline()
+})
+window.addEventListener('offline', () => {
+	console.log('[network] offline')
+	networkStore.setOffline()
+})
+
 app.use(router)
 app.component('AlertSystem', AlertSystem)										// registrar globalmente el uso de los alertas del sistema como EcoRuta
 app.mount('#app')

@@ -1,4 +1,3 @@
-<!-- resources/js/frontend/src/App.vue -->
 <template>
 	<component :is="layoutComponent">
 		<router-view />

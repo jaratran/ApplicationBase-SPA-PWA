@@ -75,9 +75,15 @@
 
 <script setup>
 	import { ref, computed, onMounted } from 'vue'
-	import { useAlertStore } from '../stores/alert'
-	import { useAuthStore } from '../stores/auth'
+	import { useAlertStore } from '@/stores/alert'
+	import { useAuthStore } from '@/stores/auth'
 	import { useRouter } from 'vue-router'
+
+import { useNetworkStore } from '@/stores/network'
+
+const network = useNetworkStore()
+
+console.log(network.isOnline, network.lastOnlineAt)
 
 	const alert = useAlertStore()
 	const auth = useAuthStore()

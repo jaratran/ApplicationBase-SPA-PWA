@@ -34,6 +34,12 @@ export default defineConfig({
 	base: '/build/',             // 👈 rutas absolutas
 	publicDir: false,            // 👈 ya estamos en public
 
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, 'public/frontend/src')
+		}
+	},
+
 	plugins: [
 		vue(),
 		tailwindcss(),			// 👈 vuelve a activarse

@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v85";
+const CACHE_NAME = "Calidad-v88";
 
 const APP_SHELL = "/build/index.html";
 
