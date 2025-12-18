@@ -52,20 +52,20 @@
 
 	<script>
 		/**
-		 * BOOTSTRAP PWA-FIRST
-		 * ------------------
-		 * Este script garantiza:
-		 * - El documento SIEMPRE carga
-		 * - Se espera al Service Worker
-		 * - Vue se monta solo cuando el runtime está listo
+		 * BOOTSTRAP PWA-FIRST — RELEASE
+		 * --------------------------------
+		 * Garantiza:
+		 * - index.html SIEMPRE carga
+		 * - El SW toma control del documento
+		 * - La SPA se monta SOLO bajo control del SW
 		 */
 
+		const BOOTSTRAP_FLAG = '__pwa_bootstrap_reload__'
+
 		function startApp() {
-			// Ocultamos bootstrap
 			document.getElementById('bootstrap').style.display = 'none'
 			document.getElementById('app').style.display = 'block'
 
-			// Cargar el entry real de Vite
 			const script = document.createElement('script')
 			script.type = 'module'
 			script.src = '/frontend/main.js'
@@ -73,20 +73,30 @@
 		}
 
 		if ('serviceWorker' in navigator) {
-			// Si el SW ya controla la página → arrancamos
+			// Caso ideal: ya estamos controlados
 			if (navigator.serviceWorker.controller) {
 				startApp()
 			} else {
-				// Esperamos a que el SW tome control
+				// SW activo pero aún no controla este documento
+				navigator.serviceWorker.ready.then(() => {
+					// Evitar loop infinito
+					if (!sessionStorage.getItem(BOOTSTRAP_FLAG)) {
+						sessionStorage.setItem(BOOTSTRAP_FLAG, '1')
+						location.reload()
+					}
+				})
+
+				// Backup: cuando finalmente tome control
 				navigator.serviceWorker.addEventListener('controllerchange', () => {
 					startApp()
 				})
 			}
 		} else {
-			// Fallback extremo (sin SW)
+			// Fallback extremo (navegadores sin SW)
 			startApp()
 		}
 	</script>
+
 </body>
 
 </html>
