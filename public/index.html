@@ -51,46 +51,26 @@
 	</script>
 
 	<script>
-		/**
-		 * BOOTSTRAP PWA-FIRST — RELEASE (STABLE)
-		 * -------------------------------------
-		 * - index.html siempre carga
-		 * - espera control del Service Worker
-		 * - arranca la SPA una sola vez
-		 */
-
 		let started = false
+		const ENTRY = '/build/assets/index-Co-aetiJ.js' // ← entry real de Vite
 
 		function safeStart() {
 			if (started) return
 			started = true
-			startApp()
-		}
 
-		// Fallback duro: nunca quedar colgado
-		setTimeout(() => {
-			console.warn('[BOOTSTRAP] Timeout, arrancando sin SW')
-			safeStart()
-		}, 3000)
-
-		async function startApp() {
 			document.getElementById('bootstrap').style.display = 'none'
 			document.getElementById('app').style.display = 'block'
 
-			// Resolver entry real de Vite
-			const manifest = await fetch('/build/.vite/manifest.json').then(r => r.json())
-			const entry = Object.values(manifest).find(m => m.isEntry)
-
-			if (!entry) {
-				console.error('[BOOTSTRAP] No se encontró entry de Vite')
-				return
-			}
-
 			const script = document.createElement('script')
 			script.type = 'module'
-			script.src = `/build/${entry.file}`
+			script.src = ENTRY
 			document.body.appendChild(script)
 		}
+
+		setTimeout(() => {
+			console.warn('[BOOTSTRAP] Timeout, arrancando fallback')
+			safeStart()
+		}, 3000)
 
 		if ('serviceWorker' in navigator) {
 			if (navigator.serviceWorker.controller) {
@@ -104,7 +84,6 @@
 			safeStart()
 		}
 	</script>
-
 </body>
 
 </html>
