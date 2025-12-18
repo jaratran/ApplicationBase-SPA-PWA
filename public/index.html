@@ -4,14 +4,12 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-
 	<title>Calidad</title>
 
 	<!-- PWA -->
 	<link rel="manifest" href="/manifest.json" />
 	<meta name="theme-color" content="#0f766e" />
 
-	<!-- Estilo mínimo para bootstrap -->
 	<style>
 		html,
 		body {
@@ -34,54 +32,19 @@
 </head>
 
 <body>
-	<!-- BOOTSTRAP -->
 	<div id="bootstrap">
 		<p>Cargando aplicación…</p>
 	</div>
 
-	<!-- APP ROOT -->
-	<div id="app" style="display:none"></div>
-
-	<!-- index.html bootstrap registra el Service Worker -->
 	<script>
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('/service-worker.js')
-				.catch(err => console.warn('[SW] register failed', err))
-		}
-	</script>
-
-	<script>
-		let started = false
-		const ENTRY = '/build/assets/index-Co-aetiJ.js' // ← entry real de Vite
-
-		function safeStart() {
-			if (started) return
-			started = true
-
-			document.getElementById('bootstrap').style.display = 'none'
-			document.getElementById('app').style.display = 'block'
-
-			const script = document.createElement('script')
-			script.type = 'module'
-			script.src = ENTRY
-			document.body.appendChild(script)
-		}
-
-		setTimeout(() => {
-			console.warn('[BOOTSTRAP] Timeout, arrancando fallback')
-			safeStart()
-		}, 3000)
-
-		if ('serviceWorker' in navigator) {
-			if (navigator.serviceWorker.controller) {
-				safeStart()
-			} else {
-				navigator.serviceWorker.addEventListener('controllerchange', () => {
-					safeStart()
-				})
-			}
+			navigator.serviceWorker.register('/service-worker.js').catch(() => { });
+			navigator.serviceWorker.ready.then(() => {
+				// Cuando el SW está listo, recargamos bajo su control
+				location.replace('/');
+			});
 		} else {
-			safeStart()
+			location.replace('/');
 		}
 	</script>
 </body>

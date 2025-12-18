@@ -7,7 +7,7 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v95";
+const CACHE_NAME = "Calidad-v96";
 
 const APP_SHELL = "/build/index.html";
 
@@ -139,32 +139,11 @@ self.addEventListener("fetch", (event) => {
 	// ------------------------------
 	// 1) ¿Es navegación (document)? → devolver siempre el App Shell
 	// ------------------------------
-	if (req.mode === "navigate") {
+	if (event.request.mode === 'navigate') {
 		event.respondWith(
-			(async () => {
-				const cache = await caches.open(CACHE_NAME);
-
-				// 1️⃣ Intentar resolver SIEMPRE el app-shell cacheado
-				const cachedShell = await cache.match(APP_SHELL);
-				if (cachedShell) {
-					return cachedShell;
-				}
-
-				// 2️⃣ Fallback a red (solo primer load online)
-				try {
-					const networkResp = await fetch(APP_SHELL);
-					if (networkResp.ok) {
-						await cache.put(APP_SHELL, networkResp.clone());
-					}
-					return networkResp;
-
-				} catch {
-					return new Response(
-						"<!DOCTYPE html><html><body><h1>Offline</h1><p>No se pudo cargar la aplicación.</p></body></html>",
-						{ headers: { "Content-Type": "text/html" }, status: 503 }
-					);
-				}
-			})()
+			caches.match('/build/index.html').then(cached => {
+				return cached || fetch('/build/index.html');
+			})
 		);
 		return;
 	}
