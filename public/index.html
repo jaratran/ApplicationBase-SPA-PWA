@@ -62,13 +62,22 @@
 
 		const BOOTSTRAP_FLAG = '__pwa_bootstrap_reload__'
 
-		function startApp() {
+		async function startApp() {
 			document.getElementById('bootstrap').style.display = 'none'
 			document.getElementById('app').style.display = 'block'
 
+			// Resolver entry real de Vite
+			const manifest = await fetch('/build/.vite/manifest.json').then(r => r.json())
+
+			const entry = Object.values(manifest).find(m => m.isEntry)
+			if (!entry) {
+				console.error('[BOOTSTRAP] No se encontró entry de Vite')
+				return
+			}
+
 			const script = document.createElement('script')
 			script.type = 'module'
-			script.src = '/frontend/main.js'
+			script.src = `/build/${entry.file}`
 			document.body.appendChild(script)
 		}
 
