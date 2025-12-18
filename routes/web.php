@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 // Entry point estático de la SPA
 Route::get('/', function () {
     return response(
-        File::get(public_path('/build/index.html')),
+        File::get(public_path('index.html')),
         200,
         ['Content-Type' => 'text/html']
     );
@@ -15,7 +15,7 @@ Route::get('/', function () {
 // SPA Fallback — cualquier ruta que no sea /api/* carga index.html
 Route::get('/{any}', function () {
     return response(
-        File::get(public_path('/build/index.html')),
+        File::get(public_path('index.html')),
         200,
         ['Content-Type' => 'text/html']
     );

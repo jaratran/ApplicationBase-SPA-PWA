@@ -10,6 +10,7 @@
 	<link rel="manifest" href="/manifest.json" />
 	<meta name="theme-color" content="#0f766e" />
 
+	<!-- Bootstrap mínimo -->
 	<style>
 		html,
 		body {
@@ -32,20 +33,102 @@
 </head>
 
 <body>
+	<!-- BOOTSTRAP -->
 	<div id="bootstrap">
 		<p>Cargando aplicación…</p>
 	</div>
 
+	<!-- APP ROOT -->
+	<div id="app" style="display:none"></div>
+
 	<script>
+		// 1) Registrar SW (si aplica)
 		if ('serviceWorker' in navigator) {
 			navigator.serviceWorker.register('/service-worker.js').catch(() => { });
-			navigator.serviceWorker.ready.then(() => {
-				// Cuando el SW está listo, recargamos bajo su control
-				location.replace('/');
-			});
-		} else {
-			location.replace('/');
 		}
+
+		// Helpers
+		const BOOTSTRAP_TIMEOUT_MS = 4000;
+		let started = false;
+
+		function showApp() {
+			document.getElementById('bootstrap').style.display = 'none';
+			document.getElementById('app').style.display = 'block';
+		}
+
+		function injectCss(href) {
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = href;
+			document.head.appendChild(link);
+		}
+
+		function injectModule(src) {
+			const script = document.createElement('script');
+			script.type = 'module';
+			script.src = src;
+			document.body.appendChild(script);
+		}
+
+		async function startSpaOnce() {
+			if (started) return;
+			started = true;
+
+			// 2) Resolver entry real desde el manifest de Vite
+			//    (esto evita hardcodear index-XXXX.js)
+			const res = await fetch('/build/.vite/manifest.json', { cache: 'no-store' });
+			if (!res.ok) throw new Error('No se pudo leer /build/.vite/manifest.json');
+
+			const manifest = await res.json();
+
+			// Caso típico: la key "index.html" es el entry
+			const entry = manifest['index.html'] || Object.values(manifest).find(m => m && m.isEntry);
+
+			if (!entry || !entry.file) {
+				throw new Error('No se encontró entry isEntry en manifest de Vite');
+			}
+
+			// 3) Inyectar CSS del entry (si existe)
+			if (Array.isArray(entry.css)) {
+				entry.css.forEach(cssFile => injectCss(`/build/${cssFile}`));
+			}
+
+			// 4) Mostrar app y cargar JS entry
+			showApp();
+			injectModule(`/build/${entry.file}`);
+		}
+
+		async function boot() {
+			// Esperar control del SW si existe (para “liberar bajo control”)
+			if ('serviceWorker' in navigator) {
+				if (navigator.serviceWorker.controller) {
+					return startSpaOnce();
+				}
+
+				// Esperamos a controllerchange (cuando el SW toma control de este documento)
+				await new Promise((resolve) => {
+					const done = () => resolve();
+					navigator.serviceWorker.addEventListener('controllerchange', done, { once: true });
+
+					// Fallback por si el SW queda listo pero no dispara controllerchange “a tiempo”
+					navigator.serviceWorker.ready.then(done).catch(done);
+				});
+
+				return startSpaOnce();
+			}
+
+			// Sin SW: arrancar igual
+			return startSpaOnce();
+		}
+
+		// Timeout de seguridad: si algo raro pasa con SW, arrancamos igual.
+		const t = setTimeout(() => { startSpaOnce().catch(() => { }); }, BOOTSTRAP_TIMEOUT_MS);
+
+		boot()
+			.catch((err) => {
+				console.warn('[BOOTSTRAP] Error al iniciar SPA:', err);
+			})
+			.finally(() => clearTimeout(t));
 	</script>
 </body>
 

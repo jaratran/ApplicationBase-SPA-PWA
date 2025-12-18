@@ -7,9 +7,9 @@
 // ==================================================================================
 
 // Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v96";
+const CACHE_NAME = "Calidad-v100";
 
-const APP_SHELL = "/build/index.html";
+const APP_SHELL = "/index.html";
 
 /**
  * --------------------------------------------------------------------------
@@ -34,17 +34,6 @@ const APP_SHELL = "/build/index.html";
  */
 importScripts("/build/manifest-sw.js");
 const ASSETS_TO_CACHE = self.__PRECACHE;
-
-// // + cache automático de assets desde fetch
-// const ASSETS_TO_CACHE = [
-// 							'/build/index.html',
-// 							'/manifest.json',
-
-// 							'/config/default_emblema.png',
-// 							'/config/default_fondo.png',
-// 							'/config/default_logo.png',
-// 							'/config/default_favicon.png'
-// 						]
 
 /**
  * --------------------------------------------------------------------------
@@ -141,10 +130,11 @@ self.addEventListener("fetch", (event) => {
 	// ------------------------------
 	if (event.request.mode === 'navigate') {
 		event.respondWith(
-			caches.match('/build/index.html').then(cached => {
-				return cached || fetch('/build/index.html');
+			caches.match(APP_SHELL).then(cached => {
+				return cached || fetch(APP_SHELL);
 			})
 		);
+
 		return;
 	}
 
