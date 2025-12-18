@@ -3,7 +3,7 @@
 	"short_name": "Calidad",
 	"description": "Calidad - SPA/PWA basada en EcoRuta para gestión de retiros y logística.",
 	"lang": "es-CL",
-	"start_url": "/offline-bootstrap.html",
+	"start_url": "/index.html",
 	"scope": "/",
 	"display": "standalone",
 	"orientation": "portrait-primary",

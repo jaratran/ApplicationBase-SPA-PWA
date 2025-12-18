@@ -3,34 +3,82 @@
 
 <head>
 	<meta charset="utf-8" />
-
-	<!-- Viewport estilo app -->
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 
 	<title>Calidad</title>
 
 	<!-- PWA -->
-	<link rel="manifest" href="/manifest.json">
-	<meta name="theme-color" content="#0f766e">
+	<link rel="manifest" href="/manifest.json" />
+	<meta name="theme-color" content="#0f766e" />
 
-	<!-- Tipografía (puede quedar CDN por ahora) -->
-	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+	<!-- Estilo mínimo para bootstrap -->
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			background: #0f766e;
+			color: white;
+		}
 
+		#bootstrap {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			text-align: center;
+		}
+	</style>
 </head>
 
-<body class="antialiased booting">
+<body>
+	<!-- BOOTSTRAP -->
+	<div id="bootstrap">
+		<p>Cargando aplicación…</p>
+	</div>
 
-	<div id="app"></div>
+	<!-- APP ROOT -->
+	<div id="app" style="display:none"></div>
 
-	<!--
-		⚠️ IMPORTANTE
-		Este script será resuelto por Vite en build.
-		En desarrollo Vite lo inyecta.
-		En producción apuntará a /build/assets/main-XXXX.js
-	-->
-	<script type="module" src="/frontend/main.js"></script>
+	<script>
+		/**
+		 * BOOTSTRAP PWA-FIRST
+		 * ------------------
+		 * Este script garantiza:
+		 * - El documento SIEMPRE carga
+		 * - Se espera al Service Worker
+		 * - Vue se monta solo cuando el runtime está listo
+		 */
 
+		function startApp() {
+			// Ocultamos bootstrap
+			document.getElementById('bootstrap').style.display = 'none'
+			document.getElementById('app').style.display = 'block'
+
+			// Cargar el entry real de Vite
+			const script = document.createElement('script')
+			script.type = 'module'
+			script.src = '/frontend/main.js'
+			document.body.appendChild(script)
+		}
+
+		if ('serviceWorker' in navigator) {
+			// Si el SW ya controla la página → arrancamos
+			if (navigator.serviceWorker.controller) {
+				startApp()
+			} else {
+				// Esperamos a que el SW tome control
+				navigator.serviceWorker.addEventListener('controllerchange', () => {
+					startApp()
+				})
+			}
+		} else {
+			// Fallback extremo (sin SW)
+			startApp()
+		}
+	</script>
 </body>
 
 </html>
