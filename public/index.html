@@ -52,15 +52,26 @@
 
 	<script>
 		/**
-		 * BOOTSTRAP PWA-FIRST — RELEASE
-		 * --------------------------------
-		 * Garantiza:
-		 * - index.html SIEMPRE carga
-		 * - El SW toma control del documento
-		 * - La SPA se monta SOLO bajo control del SW
+		 * BOOTSTRAP PWA-FIRST — RELEASE (STABLE)
+		 * -------------------------------------
+		 * - index.html siempre carga
+		 * - espera control del Service Worker
+		 * - arranca la SPA una sola vez
 		 */
 
-		const BOOTSTRAP_FLAG = '__pwa_bootstrap_reload__'
+		let started = false
+
+		function safeStart() {
+			if (started) return
+			started = true
+			startApp()
+		}
+
+		// Fallback duro: nunca quedar colgado
+		setTimeout(() => {
+			console.warn('[BOOTSTRAP] Timeout, arrancando sin SW')
+			safeStart()
+		}, 3000)
 
 		async function startApp() {
 			document.getElementById('bootstrap').style.display = 'none'
@@ -68,8 +79,8 @@
 
 			// Resolver entry real de Vite
 			const manifest = await fetch('/build/.vite/manifest.json').then(r => r.json())
-
 			const entry = Object.values(manifest).find(m => m.isEntry)
+
 			if (!entry) {
 				console.error('[BOOTSTRAP] No se encontró entry de Vite')
 				return
@@ -82,27 +93,15 @@
 		}
 
 		if ('serviceWorker' in navigator) {
-			// Caso ideal: ya estamos controlados
 			if (navigator.serviceWorker.controller) {
-				startApp()
+				safeStart()
 			} else {
-				// SW activo pero aún no controla este documento
-				navigator.serviceWorker.ready.then(() => {
-					// Evitar loop infinito
-					if (!sessionStorage.getItem(BOOTSTRAP_FLAG)) {
-						sessionStorage.setItem(BOOTSTRAP_FLAG, '1')
-						location.reload()
-					}
-				})
-
-				// Backup: cuando finalmente tome control
 				navigator.serviceWorker.addEventListener('controllerchange', () => {
-					startApp()
+					safeStart()
 				})
 			}
 		} else {
-			// Fallback extremo (navegadores sin SW)
-			startApp()
+			safeStart()
 		}
 	</script>
 
