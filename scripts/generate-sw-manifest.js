@@ -47,8 +47,8 @@ if (!fs.existsSync(manifestPath)) {
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
 let precache = [
-	"/",                 // 👈 NUEVO (alias semántico de index.html)
-	"/index.html",
+	"/",								// 👈 NUEVO (alias semántico de index.html)
+	"/build/index.html",				// 👈 Se pre-cachea el compilado porque ese será el que se use realmente
 	"/manifest.json",
 
 	// PNG base
