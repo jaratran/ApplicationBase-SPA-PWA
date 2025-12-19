@@ -6,10 +6,9 @@
 // 			y fallback SPA estable.
 // ==================================================================================
 
-// Nombre del caché (cambiará en cada despliegue)
-const CACHE_NAME = "Calidad-v100";
 
-const APP_SHELL = "/index.html";
+const CACHE_NAME = "Calidad-v101";						// Nombre del caché (cambiará en cada despliegue)
+const APP_SHELL = "/index.html";						// Entry point bootstrap
 
 /**
  * --------------------------------------------------------------------------
@@ -134,8 +133,7 @@ self.addEventListener("fetch", (event) => {
 				return cached || fetch(APP_SHELL);
 			})
 		);
-
-		return;
+		// return;
 	}
 
 	// ------------------------------

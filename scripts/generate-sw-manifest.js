@@ -47,6 +47,7 @@ if (!fs.existsSync(manifestPath)) {
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
 let precache = [
+	"/",                 // 👈 NUEVO (alias semántico de index.html)
 	"/index.html",
 	"/manifest.json",
 

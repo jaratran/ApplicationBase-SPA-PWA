@@ -51,7 +51,7 @@ export default defineConfig({
 		outDir: 'build',            // → public/build
 		emptyOutDir: true,
 		rollupOptions: {
-			input: '/app.html'   	// 👈 CAMBIO CLAVE
+			input: '/index.html'   // 👈 ENTRY REAL Y ÚNICO
 		}
 	},
 
