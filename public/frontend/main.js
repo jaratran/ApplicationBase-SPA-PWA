@@ -51,22 +51,31 @@ app.use(router)
 app.component('AlertSystem', AlertSystem)										// registrar globalmente el uso de los alertas del sistema como EcoRuta
 app.mount('#app')
 
-// 🔹 Luego, en background:
-applyDesignParameters().catch(() => {
-	console.warn('Design parameters not available (offline)')
-})
-// Y cuando terminen los design parameters:
-applyDesignParameters().finally(() => {
-	document.body.classList.remove('booting')
-})
+// // 🔹 Luego, en background:
+// applyDesignParameters().catch(() => {
+// 	console.warn('Design parameters not available (offline)')
+// })
+// // Y cuando terminen los design parameters:
+// applyDesignParameters().finally(() => {
+// 	document.body.classList.remove('booting')
+// })
 
-// 🔹 Registro del Service Worker (Permitir registro también en DEV para pruebas)
-if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register('/service-worker.js')
-		.then(() => console.log("✔ Service Worker registrado"))
-		.catch(err => console.warn("⚠ Error registrando Service Worker:", err));
-}
+// // 🔹 Registro del Service Worker (Permitir registro también en DEV para pruebas)
+// if ('serviceWorker' in navigator) {
+// 	navigator.serviceWorker.register('/service-worker.js')
+// 		.then(() => console.log("✔ Service Worker registrado"))
+// 		.catch(err => console.warn("⚠ Error registrando Service Worker:", err));
+// }
 
+applyDesignParameters()
+	.catch(() => {
+		console.warn('Design parameters not available (offline)')				// 🔹 Luego, en background:
+	})
+	.finally(() => {
+		document.body.classList.remove('booting')								// Y cuando terminen los design parameters:
+	})
+
+// 🔹 Implementamos atención al mensaje del Service Worker consultando por los parámetros de diseño.
 if (navigator.serviceWorker) {
 	navigator.serviceWorker.addEventListener("message", (event) => {
 		if (event.data && event.data.type === "REQUEST_DESIGN_PARAMS") {

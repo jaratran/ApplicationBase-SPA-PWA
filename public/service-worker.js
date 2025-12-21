@@ -7,7 +7,7 @@
 // ==================================================================================
 
 
-const CACHE_NAME = "Calidad-v105";						// Nombre del caché (cambiará en cada despliegue)
+const CACHE_NAME = "Calidad-v106";						// Nombre del caché (cambiará en cada despliegue)
 const APP_SHELL = "/build/index.html";					// Entry point bootstrap - Pero EL COMPILADO
 
 /**
