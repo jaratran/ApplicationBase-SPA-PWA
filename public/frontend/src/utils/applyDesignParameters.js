@@ -25,7 +25,7 @@ export async function applyDesignParameters() {
 		// Intentamos obtener desde red o desde Service Worker
 		const response = await fetch('/api/design-parameters').catch(() => null);
 		if (!response) {
-			throw new Error("Sin conexión y sin fallback SW");
+			throw new Error("No se pudo obtener parámetros de diseño - Sin conexión y sin fallback SW");
 		}
 
 		data = await response.json();

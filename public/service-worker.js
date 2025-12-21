@@ -7,7 +7,7 @@
 // ==================================================================================
 
 
-const CACHE_NAME = "Calidad-v107";						// Nombre del caché (cambiará en cada despliegue)
+const CACHE_NAME = "Calidad-v118";						// Nombre del caché (cambiará en cada despliegue)
 const APP_SHELL = "/build/index.html";					// Entry point bootstrap - Pero EL COMPILADO
 
 /**
@@ -85,6 +85,33 @@ self.addEventListener("install", (event) => {
 				const cache = await caches.open(CACHE_NAME);
 				await cache.addAll(ASSETS_TO_CACHE);
 			} catch (_) { }
+
+			// 2) Intentar absorber parámetros de diseño desde el cliente activo
+			try {
+				// Combinamos ambos: solo ventanas, incluso si no están controladas aún
+				const allClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+
+				if (allClients && allClients.length > 0) { // Proceder con el postMessage...
+					const params = await new Promise((resolve) => {								// Armamos el buzón para recibiri respuesta ...
+						pendingDesignParamsResolver = resolve;
+						allClients[0].postMessage({ type: "REQUEST_DESIGN_PARAMS" });			// ... y dentro enviamos solicitud
+					});
+
+					// Si recibimos datos → guardarlos en API_CACHE
+					if (params) {
+						const apiCache = await caches.open(API_CACHE);
+						await apiCache.put(
+							"/api/design-parameters",
+							new Response(JSON.stringify(params), {
+								headers: { "Content-Type": "application/json" }
+							})
+						);
+						console.log("✔ SW absorbió los parámetros de diseño desde localStorage.");
+					}
+				}
+			} catch (e) {
+				console.warn("⚠ No fue posible absorber parámetros iniciales:", e);
+			}
 		})()
 	);
 	// Activar inmediatamente, sin esperar reload
@@ -118,10 +145,21 @@ self.addEventListener("fetch", (event) => {
 	const url = new URL(req.url);
 
 	// ------------------------------
-	// 0) Ignorar recursos de terceros (Google Fonts, CDNJS, etc.) - Evita errores de consola causados por SW
+	// -1) Ignorar recursos de terceros (Google Fonts, CDNJS, etc.) - Evita errores de consola causados por SW
 	// ------------------------------
 	if (url.origin !== self.location.origin) {
 		return; // Dejamos que el navegador falle tranquilo si está offline
+	}
+
+	// ------------------------------
+	// 0) FAVICON offline
+	// ------------------------------
+	if (url.pathname === "/favicon.ico") {
+		event.respondWith(
+			caches.match("/config/default_favicon.png")
+		);
+
+		return;			// 🔴 ESTO ES CLAVE para salir del handler después de la navegación.
 	}
 
 	// ------------------------------
@@ -133,7 +171,8 @@ self.addEventListener("fetch", (event) => {
 				return cached || fetch(APP_SHELL);
 			})
 		);
-		// return;
+
+		return;			// 🔴 ESTO ES CLAVE para salir del handler después de la navegación.
 	}
 
 	// ------------------------------
@@ -166,16 +205,16 @@ self.addEventListener("fetch", (event) => {
 				if (net) return net;
 
 				// Fallback semántico (SIEMPRE disponible por precache)
-				if (url.pathname.includes("emblema"))
-					return cache.match("/config/default_emblema.png");
+				// if (url.pathname.includes("emblema"))
+				// 	return cache.match("/config/default_emblema.png");
 
-				if (url.pathname.includes("fondo"))
-					return cache.match("/config/default_fondo.png");
+				// if (url.pathname.includes("fondo"))
+				// 	return cache.match("/config/default_fondo.png");
 
-				if (url.pathname.includes("favicon"))
-					return cache.match("/config/default_favicon.png");
+				// if (url.pathname.includes("favicon"))
+				// 	return cache.match("/config/default_favicon.png");
 
-				return cache.match("/config/default_logo.png");
+				// return cache.match("/config/default_logo.png");
 			})
 		);
 
@@ -204,9 +243,21 @@ self.addEventListener("fetch", (event) => {
 					const cached = await caches.match(cleanUrl);
 					if (cached) return cached;
 
+					// ❌ No hay red ni cache: error REAL
+					console.error("[ServiceWorker] design-parameters no disponible (offline + sin cache)");
+
 					return new Response(
-						JSON.stringify({ error: "offline" }),
-						{ status: 200, headers: { "Content-Type": "application/json" } }
+						JSON.stringify({
+							error: "service_unavailable",
+							message: "Design parameters no disponibles (offline y sin cache)"
+						}),
+						{
+							status: 503,
+							statusText: "Service Unavailable",
+							headers: {
+								"Content-Type": "application/json"
+							}
+						}
 					);
 				})
 		);
@@ -226,13 +277,22 @@ self.addEventListener("fetch", (event) => {
 	// ------------------------------
 	event.respondWith(
 		(async () => {
-			const cached = await caches.match(req);
+			const cache = await caches.open(CACHE_NAME);
+
+			// Primero si hay cache devolvemos cache
+			const cached = await cache.match(req.url);		// ⚠️ usar URL, no Request
 			if (cached) return cached;
 
-			try {
-				return await fetch(req);
-			} catch {
-				return new Response("", { status: 404 });
+			try {											// Si no hay cache
+				const response = await fetch(req);			// Intentamos red
+				if (response.ok) {
+					await cache.put(req.url, response.clone());		// ... cacheamos
+				}
+				return response;									// Y devolvemos
+
+			} catch {												// Si no hubo cache ni red
+				// ⛔ NUNCA devolver 404 vacío para CSS/JS
+				return new Response("", { status: 503 });
 			}
 		})()
 	);

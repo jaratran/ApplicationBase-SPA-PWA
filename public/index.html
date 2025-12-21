@@ -41,65 +41,9 @@
 
 	<!-- Registro del Service Worker (pasivo, no bloqueante) -->
 	<script>
-		// if ('serviceWorker' in navigator) {
-		// 	navigator.serviceWorker.register('/service-worker.js')
-		// 		.catch(() => { });
-		// }
-
-		async function enableHighPriorityOffline() {
-			// 1. Solicitar persistencia de disco (Flag persistente en Chrome)
-			// Esto le dice a Chrome: "No borres este caché aunque falte espacio"
-			if (navigator.storage && navigator.storage.persist) {
-				const isPersisted = await navigator.storage.persist();
-				console.log(`[Storage] ¿Persistencia garantizada?: ${isPersisted}`);
-			}
-
-			// 2. Registrar el "despertador" (Periodic Sync)
-			const registration = await navigator.serviceWorker.ready;
-
-			if ('periodicSync' in registration) {
-				// OPCIONAL: Solo intentar si la PWA está instalada (evita ruidos en consola)
-				const status = await navigator.permissions.query({
-					name: 'periodic-background-sync',
-				});
-
-				if (status.state === 'granted') {
-					try {
-						// Registramos una tarea mínima para elevar la prioridad del SW en el runtime
-						await registration.periodicSync.register('pwa-keep-alive', {
-							minInterval: 24 * 60 * 60 * 1000
-						});
-						console.log('[PeriodicSync] Registro de prioridad exitoso');
-					} catch (error) {
-						// Nota: Esto requiere que la PWA esté instalada para funcionar
-						console.warn('[PeriodicSync] No se pudo registrar (normal si no está instalada)');
-					}
-				}
-			}
-		}
-
-		// if ('serviceWorker' in navigator) {
-		// 	// REGISTRO: Con updateViaCache para ignorar la red en el arranque post-reboot
-		// 	navigator.serviceWorker.register('/service-worker.js', {
-		// 		updateViaCache: 'all'
-		// 	}).catch(err => console.error("SW Registration failed", err));
-
-		// 	// EJECUCIÓN: Cuando el SW toma control, elevamos su estatus a "Prioritario"
-		// 	navigator.serviceWorker.ready.then(enableHighPriorityOffline);
-		// }
-
 		if ('serviceWorker' in navigator) {
-			// ⚠️ SOLO intentar registrar si hay conexión
-			if (navigator.onLine) {
-				navigator.serviceWorker.register('/service-worker.js', {			// REGISTRO: Con updateViaCache para ignorar la red en el arranque post-reboot
-					updateViaCache: 'all'
-				}).catch(err => console.error("SW Registration failed", err));		// fallo esperado si hay problemas de red
-			}
-
-			// SIEMPRE: usar el SW ya activo
-			navigator.serviceWorker.ready
-				.then(enableHighPriorityOffline)									// EJECUCIÓN: Cuando el SW toma control, elevamos su estatus a "Prioritario"
-				.catch(() => { /* offline cold start */ });
+			navigator.serviceWorker.register('/service-worker.js')
+				.catch(() => { });
 		}
 	</script>
 
