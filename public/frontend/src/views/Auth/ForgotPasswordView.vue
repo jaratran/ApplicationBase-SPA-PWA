@@ -90,7 +90,7 @@
 			.getPropertyValue('--emblema-design')
 			.trim()
 		if (url.startsWith('url(')) return url.slice(4, -1).replace(/["']/g, '')
-		return '/config/default-emblema.png'
+		return '/config/default_emblema.png'
 	}
 
 	function getBackground() {

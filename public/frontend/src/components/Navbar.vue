@@ -85,7 +85,7 @@
 		}
 
 		// Fallback si no existe todavía
-		return '/images/default-logo.png'
+		return '/config/default_logo.png'
 	})
 
 	const avatarUrl = computed(() => {
