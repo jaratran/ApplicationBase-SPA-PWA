@@ -108,4 +108,7 @@ export async function applyDesignParameters() {
     // 🧩 3. Opcionalmente, podríamos exponer un objeto global si el layout o el login lo requieren
     window.DesignParameters = data;
 
+	// 🔔 4. Notificar que los parámetros de diseño ya fueron aplicados
+	window.dispatchEvent(new Event('design-parameters-applied'));
+
 }

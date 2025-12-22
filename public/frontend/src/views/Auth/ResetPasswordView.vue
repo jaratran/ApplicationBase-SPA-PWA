@@ -5,7 +5,7 @@
 			<div class="card-login shadow-2xl rounded-lg p-6">
 				<!-- Emblema del Sitio -->
 				<div class="mb-4">
-					<img :src="getEmblema()" alt="Emblema del Sitio"
+					<img :src="emblemaSrc" alt="Emblema del Sitio"
 						class="w-full h-auto max-h-[180px] object-contain object-center" />
 				</div>
 
@@ -83,7 +83,7 @@
 
 		<!-- Columna derecha -->
 		<div class="md:w-2/3 pl-5 hidden md:block overflow-hidden">
-			<img class="login-image" :src="getBackground()" alt="Imagen decorativa" />
+			<img class="login-image" :src="backgroundSrc" alt="Imagen decorativa" />
 		</div>
 
 		<!-- “globo” con condiciones de contraseña -->
@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-	import { ref, computed, onMounted } from 'vue'
+	import { ref, computed, onMounted, onUnmounted } from 'vue'
 	import { useAlertStore } from '../../stores/alert'
 	import { useRoute, useRouter } from 'vue-router'
 
@@ -122,9 +122,22 @@
 
 	const loading = ref(false)
 
+	const emblemaSrc = ref(getEmblema());
+	const backgroundSrc = ref(getBackground());
+
 	onMounted(() => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
+
+		// 🔁 Releer branding cuando los parámetros estén listos
+		window.addEventListener( 'design-parameters-applied', onDesignParametersApplied );
 	})
+	onUnmounted(() => {
+		window.removeEventListener('design-parameters-applied', onDesignParametersApplied);
+	});
+	function onDesignParametersApplied() {
+		emblemaSrc.value = getEmblema();
+		backgroundSrc.value = getBackground();
+	}
 
 	function getPrimaryColor() {
 		return (
