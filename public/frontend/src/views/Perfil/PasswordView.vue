@@ -117,8 +117,6 @@
 
 	import api from '../../services/api'						// tu instancia Axios API
 
-	import '../../../css/auth.css'						// CSS Globales para vistas de Login, Cambio y Recuperación de Contraseña
-
 	const router = useRouter()									// ← navegar después del éxito
 	const alert = useAlertStore()
 

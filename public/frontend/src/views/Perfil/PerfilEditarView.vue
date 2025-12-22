@@ -56,14 +56,14 @@
 						</div>
 
 						<!-- Sucursal (ROL_SOLICITANTE_PLANTA) -->
-						<div v-if="auth.perfil.rol_id === constantes.ROL_SOLICITANTE_PLANTA" class="flex flex-col">
+						<div v-if="auth.perfil.rol_id === constantesSeguras.ROL_SOLICITANTE_PLANTA" class="flex flex-col">
 							<label class="mb-1 text-sm font-normal">Sucursal</label>
 							<input type="text" :value="auth.perfil.sucursal.nombre_sucursal" disabled
 								class="border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed opacity-80" />
 						</div>
 
 						<!-- Empresa (ROL_SOLICITANTE_PRODUCTOR) -->
-						<div v-if="auth.perfil.rol_id === constantes.ROL_SOLICITANTE_PRODUCTOR" class="flex flex-col">
+						<div v-if="auth.perfil.rol_id === constantesSeguras.ROL_SOLICITANTE_PRODUCTOR" class="flex flex-col">
 							<label class="mb-1 text-sm font-normal">Empresa</label>
 							<input type="text" :value="auth.perfil.empresa.razon_social" disabled
 								class="border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed opacity-80" />
@@ -139,7 +139,9 @@
 	const location = useLocationStore()
 	const router = useRouter()
 
-	const constantes = window.constantes;
+	const constantesSeguras = computed(() => {
+		return window.constantes ?? {}
+	})
 
 	// 🟢 Form local reactivo
 	const form = ref({
@@ -205,11 +207,12 @@
 	)
 
 	const empresaSucursal = computed(() => {
-		if (!auth.perfil) return ''
+		if (!auth.perfil || !constantesSeguras.value) return ''
+
 		const u = auth.perfil
 
-		if (u.rol_id === constantes.ROL_SOLICITANTE_PLANTA) return u.sucursal?.nombre_sucursal ?? '-'
-		if (u.rol_id === constantes.ROL_SOLICITANTE_PRODUCTOR) return u.empresa?.razon_social ?? '-'
+		if (u.rol_id === constantesSeguras.ROL_SOLICITANTE_PLANTA) return u.sucursal?.nombre_sucursal ?? '-'
+		if (u.rol_id === constantesSeguras.ROL_SOLICITANTE_PRODUCTOR) return u.empresa?.razon_social ?? '-'
 
 		return 'NA'
 	})
