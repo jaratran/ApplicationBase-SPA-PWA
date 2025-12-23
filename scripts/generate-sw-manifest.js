@@ -61,6 +61,11 @@ let precache = [
 	"/config/pwa/icon-192.png",
 	"/config/pwa/icon-512.png",
 
+	// Fuentes (Roboto)
+	"/frontend/fonts/Roboto-Regular.woff2",
+	"/frontend/fonts/Roboto-Medium.woff2",
+	"/frontend/fonts/Roboto-Bold.woff2",
+
 	// El Service Worker necesita este archivo incluso offline
 	"/build/manifest-sw.js"
 ];

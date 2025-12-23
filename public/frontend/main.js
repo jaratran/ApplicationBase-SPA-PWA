@@ -1,27 +1,31 @@
-// CSS GLOBAL DEL SISTEMA
-import './css/bootstrap-sim.css'
-import './css/app.css'
-import './css/auth.css'
+// 1° === CSS GLOBAL / INFRAESTRUCTURA VISUAL ===
+import './css/bootstrap-sim.css'													// layout, grid, compatibilidad
+import '@fortawesome/fontawesome-free/css/all.min.css'								// iconos (base visual)
+import './css/app.css'																// tailwind + variables
+import './css/auth.css'																// overrides auth
 
-import { createApp } from 'vue'
+// 2° === FRAMEWORK BASE ===
+import { createApp } from 'vue'														// Instancia de la Aplicación
 
-import axios from 'axios'                                                           // AXIOS
-import { createPinia } from 'pinia'                                                 // manejo de estado
-import { useNetworkStore } from './src/stores/network'								// Manejo del estado de conectividad
-import router from './src/router'                                                   // navegación front para PWA
+// 3° === INFRAESTRUCTURA TRANSVERSAL ===
+import axios from 'axios'															// interacción con APIS del Backend
+import { createPinia } from 'pinia'													// manejo de estado
+import router from './src/router'													// navegación front para PWA
 
+// 4° === STORES / UTILIDADES ===
+import { useNetworkStore } from './src/stores/network'								// manejo del estado de conectividad
+import { useOfflineIdentityStore } from './src/stores/offlineIdentity'				// persistencia mínima de la identidad del usuario (offline-enabled)
+import { applyDesignParameters } from './src/utils/applyDesignParameters'			// consulta tu API para obtener parámetros de diseño
+
+// 5° === COMPONENTES GLOBALES ===
 import AlertSystem from './src/components/AlertSystem.vue'							// componente global para alertas del sistema con estilo de alerts de EcoRuta
 
-import { useOfflineIdentityStore } from './src/stores/offlineIdentity'				// Persistencia mínima de la identidad del usuario (offline-enabled)
-import { applyDesignParameters } from './src/utils/applyDesignParameters'           // consulta tu API para obtener parámetros de diseño
-
-import App from './src/App.vue'                                                     // Monta App principal
-
-import '@fortawesome/fontawesome-free/css/all.min.css'                              // Font Awesome (para el ojo)
+// 6° === APP ROOT ===
+import App from './src/App.vue'														// monta App principal
 
 // Configuración global Axios
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL							// Configurar Axios en main.js
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'				// Configurar Axios globalmente con el token CSRF
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL							// configurar Axios en main.js
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'				// configurar Axios globalmente con el token CSRF
 
 // Nuevo patrón (PWA-first) - Vue debe montar SIEMPRE
 const app = createApp(App)
@@ -35,7 +39,6 @@ const networkStore = useNetworkStore(pinia)
 // Persistencia mínima de la identidad del usuario
 const offlineIdentity = useOfflineIdentityStore(pinia)
 offlineIdentity.loadFromStorage()
-
 
 // Inicializar listeners globales para manejar el estado de la conexión
 window.addEventListener('online', () => {
