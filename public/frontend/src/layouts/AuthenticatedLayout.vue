@@ -1,4 +1,3 @@
-<!-- resources/js/frontend/src/layouts/AuthenticatedLayout.vue -->
 <template>
 	<div class="min-h-screen bg-white flex flex-col">
 		<!-- NAVBAR -->
@@ -22,14 +21,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import Navbar from '../components/Navbar.vue'
-import SideMenu from '../components/SideMenu.vue'
+	import { ref } from 'vue'
+	import Navbar from '@/components/Navbar.vue'
+	import SideMenu from '@/components/SideMenu.vue'
 
-const isSidebarOpen = ref(false)
+	const isSidebarOpen = ref(false)
 
-const toggleSidebar = () => isSidebarOpen.value = !isSidebarOpen.value
-const closeSidebar = () => isSidebarOpen.value = false
+	const toggleSidebar = () => isSidebarOpen.value = !isSidebarOpen.value
+	const closeSidebar = () => isSidebarOpen.value = false
 </script>
 
 <style scoped>

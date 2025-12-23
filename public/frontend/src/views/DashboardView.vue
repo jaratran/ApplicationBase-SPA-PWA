@@ -149,50 +149,50 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useAlertStore } from '../stores/alert'
+	import { ref, onMounted } from "vue";
+	import { useAlertStore } from '@/stores/alert'
 
-import axios from "axios";
+	import axios from "axios";
 
-const alert = useAlertStore()
+	const alert = useAlertStore()
 
-const panel = ref({
-					fecha_vigente_programa: "",
-					version_programa_diario: null,
-					totalKilosEstimados: 0,
-					desdeFecha: "12-07-1972",
-					hastaFecha: "18-02-1975",
-					kpiRcvrHoy: 0,
-					kpiAcumPlan: 0,
-					kpiAcumReal: 0,
-					detalles: [],
-				});
+	const panel = ref({
+						fecha_vigente_programa: "",
+						version_programa_diario: null,
+						totalKilosEstimados: 0,
+						desdeFecha: "12-07-1972",
+						hastaFecha: "18-02-1975",
+						kpiRcvrHoy: 0,
+						kpiAcumPlan: 0,
+						kpiAcumReal: 0,
+						detalles: [],
+					});
 
-onMounted(() => {
-	alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
+	onMounted(() => {
+		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
-	fetchPanelData()
-})
+		fetchPanelData()
+	})
 
-async function fetchPanelData() {
-	try {
-		const response = await axios.get("/api/panel/datos");
+	async function fetchPanelData() {
+		try {
+			const response = await axios.get("/api/panel/datos");
 
-		if (response.data.status === "success") {
-			panel.value = response.data.data;
-		} else {
-			console.warn("Respuesta no exitosa:", response.data.message);
+			if (response.data.status === "success") {
+				panel.value = response.data.data;
+			} else {
+				console.warn("Respuesta no exitosa:", response.data.message);
+			}
+
+		} catch (error) {
+			console.error("Error al obtener datos del panel:", error);
 		}
-
-	} catch (error) {
-		console.error("Error al obtener datos del panel:", error);
 	}
-}
 
-function formatNumber(value) {
-	if (value === null || value === undefined) return "-";
-	return new Intl.NumberFormat("es-CL").format(value);
-}
+	function formatNumber(value) {
+		if (value === null || value === undefined) return "-";
+		return new Intl.NumberFormat("es-CL").format(value);
+	}
 </script>
 
 <style scoped>

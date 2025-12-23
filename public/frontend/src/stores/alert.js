@@ -1,5 +1,3 @@
-// resources/js/frontend/src/stores/alert.js
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

@@ -78,13 +78,9 @@
 	import { useAlertStore } from '@/stores/alert'
 	import { useAuthStore } from '@/stores/auth'
 	import { useRouter } from 'vue-router'
+	import { useNetworkStore } from '@/stores/network'
 
-import { useNetworkStore } from '@/stores/network'
-
-const network = useNetworkStore()
-
-console.log(network.isOnline, network.lastOnlineAt)
-
+	const network = useNetworkStore()
 	const alert = useAlertStore()
 	const auth = useAuthStore()
 	const router = useRouter()

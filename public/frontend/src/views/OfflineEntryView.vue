@@ -30,30 +30,30 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useOfflineIdentityStore } from '@/stores/offlineIdentity'
+	import { computed } from 'vue'
+	import { useRouter } from 'vue-router'
+	import { useOfflineIdentityStore } from '@/stores/offlineIdentity'
 
-const router = useRouter()
-const offlineIdentity = useOfflineIdentityStore()
+	const router = useRouter()
+	const offlineIdentity = useOfflineIdentityStore()
 
-offlineIdentity.loadFromStorage()
+	offlineIdentity.loadFromStorage()
 
-const identity = computed(() => offlineIdentity.user)
+	const identity = computed(() => offlineIdentity.user)
 
-const formattedLastSync = computed(() => {
-	if (!identity.value?.last_sync_at) return '—'
-	return new Date(identity.value.last_sync_at).toLocaleString()
-})
+	const formattedLastSync = computed(() => {
+		if (!identity.value?.last_sync_at) return '—'
+		return new Date(identity.value.last_sync_at).toLocaleString()
+	})
 
-function enterOffline() {
-	// Entramos al dashboard con sesión local controlada
-	router.replace('/dashboard')
-}
-
-function cancel() {
-	if (!offlineIdentity.user) {
-		router.replace('/login')
+	function enterOffline() {
+		// Entramos al dashboard con sesión local controlada
+		router.replace('/dashboard')
 	}
-}
+
+	function cancel() {
+		if (!offlineIdentity.user) {
+			router.replace('/login')
+		}
+	}
 </script>

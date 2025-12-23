@@ -112,10 +112,10 @@
 
 <script setup>
 	import { ref, computed, onMounted } from 'vue'
-	import { useAlertStore } from '../../stores/alert'
+	import { useAlertStore } from '@/stores/alert'
 	import { useRouter } from 'vue-router'
 
-	import api from '../../services/api'						// tu instancia Axios API
+	import api from '@/services/api'						// tu instancia Axios API
 
 	const router = useRouter()									// ← navegar después del éxito
 	const alert = useAlertStore()

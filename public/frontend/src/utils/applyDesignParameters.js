@@ -3,13 +3,13 @@
  * (EcoRuta hacía esto indirectamente en Blade al generar RGB desde PHP)
  */
 function hexToRgb(hex) {
-  if (!hex) return null;
-  const cleanHex = hex.replace('#', '');
-  const bigint = parseInt(cleanHex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return `${r}, ${g}, ${b}`;
+	if (!hex) return null;
+	const cleanHex = hex.replace('#', '');
+	const bigint = parseInt(cleanHex, 16);
+	const r = (bigint >> 16) & 255;
+	const g = (bigint >> 8) & 255;
+	const b = bigint & 255;
+	return `${r}, ${g}, ${b}`;
 }
 
 /**

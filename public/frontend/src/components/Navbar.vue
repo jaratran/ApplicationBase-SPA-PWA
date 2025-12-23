@@ -1,60 +1,58 @@
-<!-- resources/js/frontend/src/components/Navbar.vue -->
 <template>
-    <nav
-        class="navbar h-12 bg-white border-b shadow-sm flex items-center justify-between px-3 sticky top-0 z-40 select-none">
-        <!-- IZQUIERDA: Toggle + Logo + Título -->
-        <div class="flex items-center gap-3 relative">
-            <!-- Toggle -->
-            <button id="toggleSidebar" type="button"
-                class="inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 bg-white hover:bg-gray-100"
-                @click="$emit('toggle-sidebar')">
-                <i class="fas fa-th text-gray-700 text-sm"></i>
-            </button>
+	<nav
+		class="navbar h-12 bg-white border-b shadow-sm flex items-center justify-between px-3 sticky top-0 z-40 select-none">
+		<!-- IZQUIERDA: Toggle + Logo + Título -->
+		<div class="flex items-center gap-3 relative">
+			<!-- Toggle -->
+			<button id="toggleSidebar" type="button"
+				class="inline-flex items-center justify-center w-9 h-9 rounded border border-gray-300 bg-white hover:bg-gray-100"
+				@click="$emit('toggle-sidebar')">
+				<i class="fas fa-th text-gray-700 text-sm"></i>
+			</button>
 
-            <!-- LOGO igual que EcoRuta -->
-            <a href="/dashboard" class="block">
-                <img :src="logoUrl" alt="Logo" class="h-7 object-contain" />
-            </a>
-        </div>
+			<!-- LOGO igual que EcoRuta -->
+			<a href="/dashboard" class="block">
+				<img :src="logoUrl" alt="Logo" class="h-7 object-contain" />
+			</a>
+		</div>
 
-        <!-- DERECHA: Avatar + Dropdown -->
-        <div class="relative" ref="menuRef">
-            <button @click="toggleMenu" class="flex items-center gap-1 p-0 bg-transparent border-0 outline-none">
+		<!-- DERECHA: Avatar + Dropdown -->
+		<div class="relative" ref="menuRef">
+			<button @click="toggleMenu" class="flex items-center gap-1 p-0 bg-transparent border-0 outline-none">
+				<!-- FOTO DEL USUARIO -->
+				<img :src="avatarUrl" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-300" />
 
-                <!-- FOTO DEL USUARIO -->
-                <img :src="avatarUrl" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-300" />
+				<!-- TRIÁNGULO ▼ -->
+				<i class="fas fa-caret-down text-gray-700 text-sm transition-transform duration-150"
+				:class="{ 'rotate-180': menuOpen }"></i>
+			</button>
 
-                <!-- TRIÁNGULO ▼ -->
-                <i class="fas fa-caret-down text-gray-700 text-sm transition-transform duration-150"
-                    :class="{ 'rotate-180': menuOpen }"></i>
-            </button>
+			<!-- Dropdown -->
+			<transition name="fade">
+			<div v-if="menuOpen"
+				class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 py-1 z-50">
+				<button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2"
+					@click="goPerfil">
+					<i class="fas fa-user-circle text-gray-600"></i>
+					Mi Perfil
+				</button>
 
-            <!-- Dropdown -->
-            <transition name="fade">
-                <div v-if="menuOpen"
-                    class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 py-1 z-50">
-                    <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2"
-                        @click="goPerfil">
-                        <i class="fas fa-user-circle text-gray-600"></i>
-                        Mi Perfil
-                    </button>
-
-                    <button
-                        class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-                        @click="logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </transition>
-        </div>
-    </nav>
+				<button
+					class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+					@click="logout">
+					<i class="fas fa-sign-out-alt"></i>
+					Cerrar Sesión
+				</button>
+			</div>
+			</transition>
+		</div>
+	</nav>
 </template>
 
 <script setup>
     import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useAuthStore } from '../stores/auth'
+    import { useAuthStore } from '@/stores/auth'
 
     const router = useRouter()
     const auth = useAuthStore()
@@ -112,43 +110,43 @@
 </script>
 
 <style scoped>
-    .navbar {
-        border-bottom: none !important;
-        box-shadow: none !important;
-        background-color: #f8f9fa !important;
-    }
+	.navbar {
+		border-bottom: none !important;
+		box-shadow: none !important;
+		background-color: #f8f9fa !important;
+	}
 
-    #toggleSidebar {
-        border: none !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
-    }
+	#toggleSidebar {
+		border: none !important;
+		background-color: transparent !important;
+		box-shadow: none !important;
+	}
 
-    #toggleSidebar:focus,
-    #toggleSidebar:active {
-        outline: none !important;
-        box-shadow: none !important;
-    }
+	#toggleSidebar:focus,
+	#toggleSidebar:active {
+		outline: none !important;
+		box-shadow: none !important;
+	}
 
-    #toggleSidebar i {
-        font-size: 1.45rem !important;
-    }
+	#toggleSidebar i {
+		font-size: 1.45rem !important;
+	}
 
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity 0.15s ease;
-    }
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 0.15s ease;
+	}
 
-    .fade-enter-from,
-    .fade-leave-to {
-        opacity: 0;
-    }
+	.fade-enter-from,
+	.fade-leave-to {
+		opacity: 0;
+	}
 
-    .fas.fa-caret-down {
-        transition: transform 0.15s ease;
-    }
+	.fas.fa-caret-down {
+		transition: transform 0.15s ease;
+	}
 
-    .rotate-180 {
-        transform: rotate(180deg);
-    }
+	.rotate-180 {
+		transform: rotate(180deg);
+	}
 </style>

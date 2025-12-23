@@ -1,5 +1,3 @@
-// resources/js/frontend/src/stores/location.js
-
 import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'

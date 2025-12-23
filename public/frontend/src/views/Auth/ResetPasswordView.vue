@@ -104,10 +104,10 @@
 
 <script setup>
 	import { ref, computed, onMounted, onUnmounted } from 'vue'
-	import { useAlertStore } from '../../stores/alert'
+	import { useAlertStore } from '@/stores/alert'
 	import { useRoute, useRouter } from 'vue-router'
 
-	import api from '../../services/api'						// tu instancia Axios API
+	import api from '@/services/api'						// tu instancia Axios API
 
 	const route = useRoute()									// ← aquí vienen token y email
 	const router = useRouter()									// ← navegar después del éxito

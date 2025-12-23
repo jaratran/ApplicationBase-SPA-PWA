@@ -1,5 +1,3 @@
-<!-- resources/js/frontend/src/components/AlertSystem.vue -->
-
 <template>
 	<div v-if="alert.messages.length" :class="{	'alert alert-success': alert.type === 'success',
 												'alert alert-danger': alert.type === 'error',
@@ -12,7 +10,7 @@
 </template>
 
 <script setup>
-	import { useAlertStore } from '../stores/alert'
+	import { useAlertStore } from '@/stores/alert'
 
 	const alert = useAlertStore()
 </script>

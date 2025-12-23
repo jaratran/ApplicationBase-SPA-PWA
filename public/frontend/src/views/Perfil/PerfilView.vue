@@ -133,9 +133,9 @@
 
 <script setup>
     import { ref, onMounted, computed } from 'vue'
-	import { useAlertStore } from '../../stores/alert'
-    import { useAuthStore } from '../../stores/auth'
-    import api from '../../services/api'
+	import { useAlertStore } from '@/stores/alert'
+    import { useAuthStore } from '@/stores/auth'
+    import api from '@/services/api'
     import { useRouter } from 'vue-router'
 
 	const alert = useAlertStore()
