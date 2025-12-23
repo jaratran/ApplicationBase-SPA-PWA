@@ -56,14 +56,14 @@
 						</div>
 
 						<!-- Sucursal (ROL_SOLICITANTE_PLANTA) -->
-						<div v-if="auth.perfil.rol_id === constantesSeguras.ROL_SOLICITANTE_PLANTA" class="flex flex-col">
+						<div v-if="auth.perfil.rol_id === constantes.ROL_SOLICITANTE_PLANTA" class="flex flex-col">
 							<label class="mb-1 text-sm font-normal">Sucursal</label>
 							<input type="text" :value="auth.perfil.sucursal.nombre_sucursal" disabled
 								class="border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed opacity-80" />
 						</div>
 
 						<!-- Empresa (ROL_SOLICITANTE_PRODUCTOR) -->
-						<div v-if="auth.perfil.rol_id === constantesSeguras.ROL_SOLICITANTE_PRODUCTOR" class="flex flex-col">
+						<div v-if="auth.perfil.rol_id === constantes.ROL_SOLICITANTE_PRODUCTOR" class="flex flex-col">
 							<label class="mb-1 text-sm font-normal">Empresa</label>
 							<input type="text" :value="auth.perfil.empresa.razon_social" disabled
 								class="border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed opacity-80" />
@@ -128,20 +128,22 @@
 
 <script setup>
 	import { ref, onMounted, computed, watch } from 'vue'
-	import { useAlertStore } from '../../stores/alert'
-	import { useAuthStore } from '../../stores/auth'
-	import { useLocationStore } from '../../stores/location'
 	import { useRouter } from 'vue-router'
-	import api from '../../services/api'
 
+	import { useAlertStore } from '@/stores/alert'
+	import { useAuthStore } from '@/stores/auth'
+	import { useConstantesStore } from '@/stores/constantes'
+	import { useLocationStore } from '@/stores/location'
+
+	import api from '@/services/api'
+
+	const router = useRouter()
 	const alert = useAlertStore()
 	const auth = useAuthStore()
+	const constantesStore = useConstantesStore()
 	const location = useLocationStore()
-	const router = useRouter()
 
-	const constantesSeguras = computed(() => {
-		return window.constantes ?? {}
-	})
+	const constantes = computed(() => constantesStore.data ?? {})
 
 	// 🟢 Form local reactivo
 	const form = ref({
@@ -165,7 +167,8 @@
 		// 1) Cargar perfil del usuario
 		await auth.fetchPerfil()
 
-		// Cargar regiones siempre al entrar
+		// Cargar constantes y regiones siempre al entrar
+		await constantesStore.fetchConstantes()
 		await loadRegiones()
 
 		// 2) Pre-cargar datos del form cuando el perfil esté disponible
@@ -207,12 +210,12 @@
 	)
 
 	const empresaSucursal = computed(() => {
-		if (!auth.perfil || !constantesSeguras.value) return ''
+		if (!auth.perfil || !constantes.value) return ''
 
 		const u = auth.perfil
 
-		if (u.rol_id === constantesSeguras.ROL_SOLICITANTE_PLANTA) return u.sucursal?.nombre_sucursal ?? '-'
-		if (u.rol_id === constantesSeguras.ROL_SOLICITANTE_PRODUCTOR) return u.empresa?.razon_social ?? '-'
+		if (u.rol_id === constantes.ROL_SOLICITANTE_PLANTA) return u.sucursal?.nombre_sucursal ?? '-'
+		if (u.rol_id === constantes.ROL_SOLICITANTE_PRODUCTOR) return u.empresa?.razon_social ?? '-'
 
 		return 'NA'
 	})

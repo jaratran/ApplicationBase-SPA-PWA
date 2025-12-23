@@ -1,5 +1,3 @@
-//resources/js/frontend/src/services/api.js
-
 import axios from 'axios'
 
 // Configuración global de Axios para Sanctum
