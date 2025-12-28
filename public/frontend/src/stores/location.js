@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { getCachedComunas, setCachedComunas } from '@/services/offline/comunasCacheRepo'
+import { useNetworkStore } from './network'
 import api from '../services/api'
 import { ref } from 'vue'
 
@@ -16,7 +18,19 @@ export const useLocationStore = defineStore('location', () => {
 	}
 
 	async function fetchComunas(regionId) {
+		const network = useNetworkStore()
+
+		// 🔌 OFFLINE → cache
+		if (!network.isOnline) {
+			const cached = await getCachedComunas(regionId)
+			return cached?.data ?? []
+		}
+
+		// 🌐 ONLINE → API
 		const { data } = await api.get(`/regiones/${regionId}/comunas`)
+
+		await setCachedComunas(regionId, data)
+
 		comunas.value = data
 		return data
 	}
