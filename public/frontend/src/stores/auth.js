@@ -166,7 +166,7 @@ export const useAuthStore = defineStore('auth', {
 			const locationStore = useLocationStore()
 
 			let comuna = this.perfil?.comuna
-			let region = this.perfil?.region
+			let region = this.perfil?.comuna?.region ?? null   // 👈 shape real esperado por la vista
 
 			// 🔑 Rehidratar proyección usando catálogos locales
 			if (payload.comuna_id && locationStore.regiones?.length) {
@@ -180,18 +180,23 @@ export const useAuthStore = defineStore('auth', {
 				}
 			}
 
-			// 🔑 Fallback final
-			if (comuna?.region_id) {
-				region = locationStore.regiones.find(
-					r => r.id === comuna.region_id
-				) ?? null
+			// 🔑 Resolver región desde comuna.region_id (siempre desde comuna)
+			if (comuna?.region_id && locationStore.regiones?.length) {
+				region = locationStore.regiones.find(r => r.id === comuna.region_id) ?? null
+			}
+
+			// 🔑 Inyectar región dentro de comuna (para que PerfilView la muestre)
+			if (comuna) {
+				comuna = {
+					...comuna,
+					region: region ?? comuna.region ?? null,
+				}
 			}
 
 			const actualizado = {
 				...(this.perfil ?? {}),
 				...payload,
 				comuna,
-				region,
 			}
 
 			this.perfil = actualizado
