@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api, { sanctum } from '@/services/api'
+import { useLocationStore } from '@/stores/location'
 import { useNetworkStore } from './network'
 import { useOfflineIdentityStore } from './offlineIdentity'
 import { getCachedPerfil, setCachedPerfil } from '@/services/offline/profileCacheRepo'
@@ -162,9 +163,29 @@ export const useAuthStore = defineStore('auth', {
 			const network = useNetworkStore()
 
 			// 🧠 1) Actualización optimista del store
+			const locationStore = useLocationStore()
+
+			let comuna = this.perfil?.comuna
+			let region = this.perfil?.region
+
+			// 🔑 Rehidratar proyección usando catálogos locales
+			if (payload.comuna_id && locationStore.regiones?.length) {
+				for (const r of locationStore.regiones) {
+					const comunas = await locationStore.fetchComunas(r.id)
+					const found = comunas.find(c => c.id === payload.comuna_id)
+					if (found) {
+						comuna = found
+						region = r
+						break
+					}
+				}
+			}
+
 			const actualizado = {
 				...(this.perfil ?? {}),
 				...payload,
+				comuna,
+				region,
 			}
 
 			this.perfil = actualizado
