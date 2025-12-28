@@ -8,7 +8,13 @@ export async function getCachedPerfil() {
 
 export async function setCachedPerfil(perfil) {
 	return kvSet(KEY, {
-		data: perfil,
+		data: JSON.parse(
+			JSON.stringify(perfil, (_, value) => {
+							// Eliminar funciones y referencias no serializables
+							if (typeof value === 'function') return undefined
+							return value
+			})
+		),
 		cachedAt: new Date().toISOString()
 	})
 }

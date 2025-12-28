@@ -8,7 +8,13 @@ export async function getCachedDashboard() {
 
 export async function setCachedDashboard(data) {
 	return kvSet(KEY, {
-		data,
+		data: JSON.parse(
+			JSON.stringify(data, (_, value) => {
+							// Eliminar funciones y referencias no serializables
+							if (typeof value === 'function') return undefined
+							return value
+			})
+		),
 		cachedAt: new Date().toISOString()
 	})
 }
