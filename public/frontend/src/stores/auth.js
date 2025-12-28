@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import api, { sanctum } from '@/services/api'
 import { useNetworkStore } from './network'
 import { useOfflineIdentityStore } from './offlineIdentity'
+import { getCachedPerfil, setCachedPerfil } from '@/services/offline/profileCacheRepo'
+import { enqueueOutbox } from '@/services/offline/outboxRepo'
 
 export const useAuthStore = defineStore('auth', {
 	state: () => ({
@@ -12,6 +14,34 @@ export const useAuthStore = defineStore('auth', {
 	}),
 
 	actions: {
+		/** ==========================
+		 *  LOAD OFFLINE CACHE PERFIL
+		 *  ========================== */
+		async loadPerfilFromCache() {
+			try {
+				const cached = await getCachedPerfil()
+				if (cached?.data) {
+					this.perfil = cached.data
+					return this.perfil
+				}
+			} catch (e) {
+				console.warn('[auth] No se pudo cargar perfil desde cache', e)
+			}
+
+			return null
+		},
+
+		/** ==========================
+		 *  SAVE OFFLINE CACHE PERFIL
+		 *  ========================== */
+		async savePerfilToCache(perfil) {
+			try {
+				await setCachedPerfil(perfil)
+			} catch (e) {
+				console.warn('[auth] No se pudo guardar perfil en cache', e)
+			}
+		},
+
 		/** ==========================
 		 *  COOKIE CSRF - SESION
 		 *  ========================== */
@@ -95,15 +125,84 @@ export const useAuthStore = defineStore('auth', {
 		 *  PERFIL EXTENDIDO
 		 *  ========================== */
 		async fetchPerfil() {
+			const network = useNetworkStore()
+
+			// 🔌 OFFLINE → cache
+			if (!network.isOnline) {
+				const cached = await this.loadPerfilFromCache()
+				if (cached) return cached
+
+				this.perfil = null
+				return null
+			}
+
+			// 🌐 ONLINE → API
 			try {
 				const { data } = await api.get('/perfil')
 				this.perfil = data.data
+
+				// Persistir cache offline
+				await this.savePerfilToCache(this.perfil)
+
 				return this.perfil
 
 			} catch (error) {
 				console.error('Error cargando perfil extendido:', error)
+
+				// Fallback: intentar cache
+				const cached = await this.loadPerfilFromCache()
+				if (cached) return cached
+
 				this.perfil = null
 				return null
+			}
+		},
+
+		async updatePerfilOfflineFirst(payload) {
+			const network = useNetworkStore()
+
+			// 🧠 1) Actualización optimista del store
+			const actualizado = {
+				...(this.perfil ?? {}),
+				...payload,
+			}
+
+			this.perfil = actualizado
+			await this.savePerfilToCache(actualizado)
+
+			// 🔌 OFFLINE → encolar y salir
+			if (!network.isOnline) {
+				await enqueueOutbox({
+					type: 'perfil.update',
+					payload
+				})
+
+				return { queued: true }
+			}
+
+			// 🌐 ONLINE → intentar backend
+			try {
+				await api.post('/perfil/update', payload)
+
+				// Rehidratar desde backend (verdad final)
+				await this.fetchPerfil()
+
+				return { queued: false }
+
+			} catch (error) {
+				console.warn('[auth] Error actualizando perfil, se encola', error)
+
+				const status = error?.response?.status
+				if (status === 401 || status === 419) {
+					throw error   // dejar que el flujo normal maneje auth
+				}
+
+				await enqueueOutbox({
+					type: 'perfil.update',
+					payload
+				})
+
+				return { queued: true }
 			}
 		},
 

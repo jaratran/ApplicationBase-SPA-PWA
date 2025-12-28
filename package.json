@@ -3,8 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-		"dev": "vite",
-		"build": "vite build && node scripts/generate-sw-manifest.js"
+        "dev": "vite",
+        "build": "vite build && node scripts/generate-sw-manifest.js"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.14",
@@ -20,6 +20,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^7.1.0",
         "@vitejs/plugin-vue": "^6.0.1",
+        "idb": "^8.0.3",
         "pinia": "^3.0.3",
         "vue": "^3.5.22",
         "vue-router": "^4.5.1"

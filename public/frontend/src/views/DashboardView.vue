@@ -11,8 +11,8 @@
 				<div class="card mb-4">
 					<div
 						class="card-header bg-secondary text-white fs-5 d-flex justify-content-between align-items-center flex-wrap">
-						Consolidado Semanal, desde el <strong>{{ panel.desdeFecha }}</strong> al <strong>{{
-							panel.hastaFecha
+						Consolidado Semanal, desde el <strong>{{ panelStore.data?.desdeFecha }}</strong> al <strong>{{
+							panelStore.data?.hastaFecha
 							}}</strong>
 					</div>
 
@@ -20,54 +20,63 @@
 						<!-- 🔹 ALERTAS AL ESTILO EcoRuta -->
 						<AlertSystem />
 
-						<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-							<!-- Gráfico Tons Plan x Sucursal y el % del Total - Hoy -->
-							<div class="col-span-12 md:col-span-4">
-								<div class="card h-full">
-									<div class="card-header bg-primary text-white py-2">
-										Toneladas Plan x Sucursal y % del Total - Hoy
-									</div>
-									<div class="card-body p-3">
-										<div class="placeholder-chart">Gráfico pendiente</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- KPI de Toneladas (1) -->
-							<div class="col-span-12 md:col-span-2 py-2">
-								<div class="card bg-secondary text-white text-center">
-									<div class="card-header py-2 border-b border-black/40">Tons a Recibir ETA Hoy</div>
-									<div class="card-body py-3">
-										<h2>{{ formatNumber(panel.kpiRcvrHoy) }}</h2>
-									</div>
-								</div>
-							</div>
-
-							<!-- Gráfico Tons Plan x día vs Tons Real x día - Últimos 7 días -->
-							<div class="col-span-12 md:col-span-4">
-								<div class="card h-full">
-									<div class="card-header bg-primary text-white py-2">
-										Tons Plan x día vs Tons Real x día - Últimos 7 días
-									</div>
-									<div class="card-body p-3">
-										<div class="placeholder-chart">Gráfico pendiente</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- KPIs de Toneladas (2) -->
-							<div class="col-span-12 md:col-span-2">
-								<div class="card bg-success text-white text-center mt-2 mb-3">
-									<div class="card-header py-2 border-b border-black/40">Acum Plan Ults 7 días</div>
-									<div class="card-body py-3">
-										<h2>{{ formatNumber(panel.kpiAcumPlan) }}</h2>
+						<div v-if="panelStore.loading" class="text-center text-muted py-4">
+							<i class="fas fa-spinner fa-spin"></i>
+							<p>Cargando panel…</p>
+						</div>
+						<div v-else>
+							<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+								<!-- Gráfico Tons Plan x Sucursal y el % del Total - Hoy -->
+								<div class="col-span-12 md:col-span-4">
+									<div class="card h-full">
+										<div class="card-header bg-primary text-white py-2">
+											Toneladas Plan x Sucursal y % del Total - Hoy
+										</div>
+										<div class="card-body p-3">
+											<div class="placeholder-chart">Gráfico pendiente</div>
+										</div>
 									</div>
 								</div>
 
-								<div class="card bg-warning text-white text-center">
-									<div class="card-header py-2 border-b border-black/40">Acum Real Ults 7 días</div>
-									<div class="card-body py-3">
-										<h2>{{ formatNumber(panel.kpiAcumReal) }}</h2>
+								<!-- KPI de Toneladas (1) -->
+								<div class="col-span-12 md:col-span-2 py-2">
+									<div class="card bg-secondary text-white text-center">
+										<div class="card-header py-2 border-b border-black/40">Tons a Recibir ETA Hoy
+										</div>
+										<div class="card-body py-3">
+											<h2>{{ formatNumber(panelStore.data?.kpiRcvrHoy) }}</h2>
+										</div>
+									</div>
+								</div>
+
+								<!-- Gráfico Tons Plan x día vs Tons Real x día - Últimos 7 días -->
+								<div class="col-span-12 md:col-span-4">
+									<div class="card h-full">
+										<div class="card-header bg-primary text-white py-2">
+											Tons Plan x día vs Tons Real x día - Últimos 7 días
+										</div>
+										<div class="card-body p-3">
+											<div class="placeholder-chart">Gráfico pendiente</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- KPIs de Toneladas (2) -->
+								<div class="col-span-12 md:col-span-2">
+									<div class="card bg-success text-white text-center mt-2 mb-3">
+										<div class="card-header py-2 border-b border-black/40">Acum Plan Ults 7 días
+										</div>
+										<div class="card-body py-3">
+											<h2>{{ formatNumber(panelStore.data?.kpiAcumPlan) }}</h2>
+										</div>
+									</div>
+
+									<div class="card bg-warning text-white text-center">
+										<div class="card-header py-2 border-b border-black/40">Acum Real Ults 7 días
+										</div>
+										<div class="card-body py-3">
+											<h2>{{ formatNumber(panelStore.data?.kpiAcumReal) }}</h2>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -81,15 +90,15 @@
 						class="card-header bg-secondary text-white fs-5 d-flex justify-content-between align-items-center flex-wrap">
 						<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
 							<div class="col-span-12 md:col-span-8">
-								Programa Diario vigente el día de HOY : <strong>{{ panel.fecha_vigente_programa
+								Programa Diario vigente el día de HOY : <strong>{{ panelStore.data?.fecha_vigente_programa
 									}}</strong><br />
-								<span v-if="panel.version_programa_diario">
-									<span class="italic">Versión {{ panel.version_programa_diario }}</span>
+								<span v-if="panelStore.data?.version_programa_diario">
+									<span class="italic">Versión {{ panelStore.data?.version_programa_diario }}</span>
 								</span>
 							</div>
 							<div class="col-span-12 md:col-span-4 text-end">
 								<strong>Total kilos considerados:</strong><br />
-								<span class="text-normal">{{ formatNumber(panel.totalKilosEstimados) }} kg</span>
+								<span class="text-normal">{{ formatNumber(panelStore.data?.totalKilosEstimados) }} kg</span>
 							</div>
 						</div>
 					</div>
@@ -117,7 +126,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="(detalle, index) in panel.detalles" :key="index">
+									<tr v-for="(detalle, index) in panelStore.data?.detalles" :key="index">
 										<td>{{ detalle.estado }}</td>
 										<td>{{ detalle.novedad }}</td>
 										<td>{{ detalle.sucursal }}</td>
@@ -133,7 +142,7 @@
 										<td>{{ detalle.especie }}</td>
 										<td>{{ detalle.bins ?? '-' }}</td>
 									</tr>
-									<tr v-if="panel.detalles.length === 0">
+									<tr v-if="panelStore.data?.detalles.length === 0">
 										<td colspan="14" class="text-center text-muted py-4">
 											<em>No hay datos disponibles</em>
 										</td>
@@ -151,41 +160,44 @@
 <script setup>
 	import { ref, onMounted } from "vue";
 	import { useAlertStore } from '@/stores/alert'
-	import api from '@/services/api'
+	import { usePanelStore } from '@/stores/panel'
 
 	const alert = useAlertStore()
-	const panel = ref({	fecha_vigente_programa: "",
-						version_programa_diario: null,
-						totalKilosEstimados: 0,
-						desdeFecha: "12-07-1972",
-						hastaFecha: "18-02-1975",
-						kpiRcvrHoy: 0,
-						kpiAcumPlan: 0,
-						kpiAcumReal: 0,
-						detalles: [],
-					});
+	// const panel = ref({	fecha_vigente_programa: "",
+	// 					version_programa_diario: null,
+	// 					totalKilosEstimados: 0,
+	// 					desdeFecha: "12-07-1972",
+	// 					hastaFecha: "18-02-1975",
+	// 					kpiRcvrHoy: 0,
+	// 					kpiAcumPlan: 0,
+	// 					kpiAcumReal: 0,
+	// 					detalles: [],
+	// 				});
+	const panelStore = usePanelStore()
 
-	onMounted(() => {
+	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
-		fetchPanelData()
+
+		// fetchPanelData()
+		await panelStore.fetchPanel()
 	})
 
-	async function fetchPanelData() {
-		try {
-			const response = await api.get('/panel/datos')
+	// async function fetchPanelData() {
+	// 	try {
+	// 		const response = await api.get('/panel/datos')
 
-			if (response.data?.status === 'success') {
-				panel.value = response.data.data
-			} else {
-				console.warn("Respuesta no exitosa:", response.data.message);
-				alert.show('No fue posible obtener datos del panel', 'warning')
-			}
+	// 		if (response.data?.status === 'success') {
+	// 			panel.value = response.data.data
+	// 		} else {
+	// 			console.warn("Respuesta no exitosa:", response.data.message);
+	// 			alert.show('No fue posible obtener datos del panel', 'warning')
+	// 		}
 
-		} catch (error) {
-			console.error('Error al obtener datos del panel:', error)
-			alert.show('Error de conexión al cargar el panel', 'error')
-		}
-	}
+	// 	} catch (error) {
+	// 		console.error('Error al obtener datos del panel:', error)
+	// 		alert.show('Error de conexión al cargar el panel', 'error')
+	// 	}
+	// }
 
 	function formatNumber(value) {
 		if (value === null || value === undefined) return "-";

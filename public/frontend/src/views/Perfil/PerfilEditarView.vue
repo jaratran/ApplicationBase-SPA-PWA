@@ -133,7 +133,6 @@
 	import { useAuthStore } from '@/stores/auth'
 	import { useConstantesStore } from '@/stores/constantes'
 	import { useLocationStore } from '@/stores/location'
-	import api from '@/services/api'
 
 	const router = useRouter()
 	const alert = useAlertStore()
@@ -231,13 +230,15 @@
 	const submitForm = async () => {
 		try {
 			const payload = { ...form.value }
-			await api.post('/perfil/update', payload)
 
-			// 🔑 SINCRONIZAR STORE GLOBAL
-			await auth.fetchPerfil()
+			// 🔑 ALMACENAJE OFFLINE FIRST
+			const result = await auth.updatePerfilOfflineFirst(payload)
 
-			// Si quieres refrescar perfil global
-			alert.show('El perfil ha sido actualizado correctamente', 'success', true) // Alerta persistente para vista Perfil
+			if (result?.queued) {
+				alert.show( 'Cambios guardados localmente. Se sincronizarán automáticamente al recuperar conexión.', 'info', true )
+			} else {
+				alert.show( 'El perfil ha sido actualizado correctamente.', 'success', true )
+			}
 
 		} catch (error) {
 			alert.show('Error al actualizar el perfil.', 'error')
