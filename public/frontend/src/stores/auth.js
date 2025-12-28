@@ -175,10 +175,16 @@ export const useAuthStore = defineStore('auth', {
 					const found = comunas.find(c => c.id === payload.comuna_id)
 					if (found) {
 						comuna = found
-						region = r
 						break
 					}
 				}
+			}
+
+			// 🔑 Fallback final
+			if (comuna?.region_id) {
+				region = locationStore.regiones.find(
+					r => r.id === comuna.region_id
+				) ?? null
 			}
 
 			const actualizado = {
