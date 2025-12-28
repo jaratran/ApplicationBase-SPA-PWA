@@ -1,44 +1,55 @@
 import { defineStore } from 'pinia'
+import { getCachedRegiones,	setCachedRegiones } from '@/services/offline/regionesCacheRepo'
 import { getCachedComunas, setCachedComunas } from '@/services/offline/comunasCacheRepo'
 import { useNetworkStore } from './network'
 import api from '../services/api'
-import { ref } from 'vue'
 
-export const useLocationStore = defineStore('location', () => {
+export const useLocationStore = defineStore('location', {
+	state: () => ({
+		regiones: [],
+		comunasByRegion: {}
+	}),
 
-	const regiones = ref([])
-	const comunas = ref([])
+	actions: {
+		/* ============================
+			* REGIONES (OFFLINE FIRST)
+			* ============================ */
+		async fetchRegiones() {
+			const network = useNetworkStore()
 
-	async function fetchRegiones() {
-		if (regiones.value.length) return regiones.value  // cache
+			// 🔌 OFFLINE → cache
+			if (!network.isOnline) {
+				const cached = await getCachedRegiones()
+				this.regiones = cached?.data ?? []
+				return this.regiones
+			}
 
-		const { data } = await api.get('/regiones')
-		regiones.value = data
-		return data
-	}
+			// 🌐 ONLINE → API
+			const { data } = await api.get('/regiones')
+			this.regiones = data
 
-	async function fetchComunas(regionId) {
-		const network = useNetworkStore()
+			await setCachedRegiones(data)
+			return data
+		},
 
-		// 🔌 OFFLINE → cache
-		if (!network.isOnline) {
-			const cached = await getCachedComunas(regionId)
-			return cached?.data ?? []
+		/* ============================
+			* COMUNAS POR REGIÓN (OFFLINE FIRST)
+			* ============================ */
+		async fetchComunas(regionId) {
+			const network = useNetworkStore()
+
+			// 🔌 OFFLINE → cache
+			if (!network.isOnline) {
+				const cached = await getCachedComunas(regionId)
+				return cached?.data ?? []
+			}
+
+			// 🌐 ONLINE → API
+			const { data } = await api.get(`/regiones/${regionId}/comunas`)
+
+			await setCachedComunas(regionId, data)
+			return data
 		}
 
-		// 🌐 ONLINE → API
-		const { data } = await api.get(`/regiones/${regionId}/comunas`)
-
-		await setCachedComunas(regionId, data)
-
-		comunas.value = data
-		return data
-	}
-
-	return {
-		regiones,
-		comunas,
-		fetchRegiones,
-		fetchComunas,
 	}
 })

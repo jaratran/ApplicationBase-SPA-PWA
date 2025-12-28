@@ -159,6 +159,11 @@
 	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
+		// 🔑 CLAVE: asegurar regiones (online u offline)
+		if (!location.regiones?.length) {
+			await location.fetchRegiones()
+		}
+
 		// 1) Pre-cargar datos del form cuando el perfil esté disponible
 		if (auth.perfil) {
 			form.value.rut_usuario = auth.perfil.rut_usuario
@@ -171,31 +176,11 @@
 			form.value.direccion = auth.perfil.direccion
 		}
 
-		// 2) Si ya tengo región, cargo sus comunas
+		// 🔑 CLAVE: cargar comunas desde cache si aplica
 		if (form.value.region_id) {
 			await loadComunas(form.value.region_id)
 		}
 	})
-
-	// 🔵 Observa si el perfil llega después (por si tardara la carga)
-	watch(
-		() => auth.perfil,
-		(nuevo) => {
-			if (!nuevo) return
-
-			form.value = {
-				rut_usuario: nuevo.rut_usuario,
-				nombre_usuario: nuevo.nombre_usuario,
-				apellidos_usuario: nuevo.apellidos_usuario,
-				email: nuevo.email,
-				telefono: nuevo.telefono,
-				region_id: nuevo.comuna?.region_id ?? '',
-				comuna_id: nuevo.comuna_id ?? '',
-				direccion: nuevo.direccion ?? '',
-			}
-		},
-		{ immediate: true }
-	)
 
 	const empresaSucursal = computed(() => {
 		if (!auth.perfil || !constantes.value) return ''
@@ -252,6 +237,31 @@
 	const cancelar = () => {
 		router.push('/perfil')
 	}
+
+	// 🔵 Observa si el perfil llega después (por si tardara la carga)
+	watch(
+		() => auth.perfil,
+		async (nuevo) => {
+			if (!nuevo) return
+
+			form.value = {
+				rut_usuario: nuevo.rut_usuario,
+				nombre_usuario: nuevo.nombre_usuario,
+				apellidos_usuario: nuevo.apellidos_usuario,
+				email: nuevo.email,
+				telefono: nuevo.telefono,
+				region_id: nuevo.comuna?.region_id ?? '',
+				comuna_id: nuevo.comuna_id ?? '',
+				direccion: nuevo.direccion ?? '',
+			}
+
+			// 🔑 CLAVE: rehidratar comunas (offline-safe)
+			if (form.value.region_id) {
+				await loadComunas(form.value.region_id)
+			}
+		},
+		{ immediate: true }
+	)
 </script>
 
 <style scoped></style>
