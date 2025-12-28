@@ -15,7 +15,6 @@ import router from './src/router'													// navegación front para PWA
 // 4° === STORES / UTILIDADES ===
 import { useNetworkStore } from './src/stores/network'								// manejo del estado de conectividad
 import { useOfflineIdentityStore } from './src/stores/offlineIdentity'				// persistencia mínima de la identidad del usuario (offline-enabled)
-//import { applyDesignParameters } from './src/utils/applyDesignParameters'			// consulta tu API para obtener parámetros de diseño
 
 // 5° === COMPONENTES GLOBALES ===
 import AlertSystem from './src/components/AlertSystem.vue'							// componente global para alertas del sistema con estilo de alerts de EcoRuta

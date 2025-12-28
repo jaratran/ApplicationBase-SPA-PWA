@@ -133,24 +133,25 @@
 
 <script setup>
     import { ref, onMounted, computed } from 'vue'
+    import { useRouter } from 'vue-router'
 	import { useAlertStore } from '@/stores/alert'
     import { useAuthStore } from '@/stores/auth'
     import api from '@/services/api'
-    import { useRouter } from 'vue-router'
 
+    const router = useRouter()
 	const alert = useAlertStore()
     const auth = useAuthStore()
-    const router = useRouter()
 
 	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
 		// 1) Recuperar perfil
-		await auth.fetchPerfil()
+		// await auth.fetchPerfil()
 	})
 
 	const avatarMedium = computed(() => {
 		if (!auth.perfil) return '/uploads/avatar/default_medium.jpg'
+
 		return `/uploads/avatar/${auth.perfil.avatar}_medium.jpg`
 	})
 

@@ -21,14 +21,40 @@
 </template>
 
 <script setup>
-	import { ref } from 'vue'
+	import { ref, onMounted } from 'vue'
+
+	import { useAuthStore } from '@/stores/auth'
+	import { useConstantesStore } from '@/stores/constantes'
+	import { useLocationStore } from '@/stores/location'
+
 	import Navbar from '@/components/Navbar.vue'
 	import SideMenu from '@/components/SideMenu.vue'
 
 	const isSidebarOpen = ref(false)
 
+	const auth = useAuthStore()
+	const constantesStore = useConstantesStore()
+	const locationStore = useLocationStore()
+
 	const toggleSidebar = () => isSidebarOpen.value = !isSidebarOpen.value
 	const closeSidebar = () => isSidebarOpen.value = false
+
+	onMounted(() => {
+		// Contexto autenticado
+		if (!auth.perfil) {
+			auth.fetchPerfil()
+		}
+
+		// Constantes de dominio
+		if (!constantesStore.loaded) {
+			constantesStore.fetchConstantes()
+		}
+
+		// Regiones / ubicaciones
+		if (!locationStore.regiones?.length) {
+			locationStore.fetchRegiones()
+		}
+	})
 </script>
 
 <style scoped>

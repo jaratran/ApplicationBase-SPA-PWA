@@ -129,12 +129,10 @@
 <script setup>
 	import { ref, onMounted, computed, watch } from 'vue'
 	import { useRouter } from 'vue-router'
-
 	import { useAlertStore } from '@/stores/alert'
 	import { useAuthStore } from '@/stores/auth'
 	import { useConstantesStore } from '@/stores/constantes'
 	import { useLocationStore } from '@/stores/location'
-
 	import api from '@/services/api'
 
 	const router = useRouter()
@@ -143,35 +141,26 @@
 	const constantesStore = useConstantesStore()
 	const location = useLocationStore()
 
-	const constantes = computed(() => constantesStore.data ?? {})
-
 	// 🟢 Form local reactivo
-	const form = ref({
-		rut_usuario: '',
-		nombre_usuario: '',
-		apellidos_usuario: '',
-		email: '',
-		telefono: '',
-		region_id: '',
-		comuna_id: '',
-		direccion: '',
-	})
+	const form = ref({	rut_usuario: '',
+						nombre_usuario: '',
+						apellidos_usuario: '',
+						email: '',
+						telefono: '',
+						region_id: '',
+						comuna_id: '',
+						direccion: '',
+					})
 
 	// 🧩 Listas cargadas desde backend
-	const regiones = ref([])
+	const constantes = computed(() => constantesStore.data ?? {})
+	const regiones = computed(() => location.regiones ?? [])
 	const comunas = ref([])
 
 	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
 
-		// 1) Cargar perfil del usuario
-		await auth.fetchPerfil()
-
-		// Cargar constantes y regiones siempre al entrar
-		await constantesStore.fetchConstantes()
-		await loadRegiones()
-
-		// 2) Pre-cargar datos del form cuando el perfil esté disponible
+		// 1) Pre-cargar datos del form cuando el perfil esté disponible
 		if (auth.perfil) {
 			form.value.rut_usuario = auth.perfil.rut_usuario
 			form.value.nombre_usuario = auth.perfil.nombre_usuario
@@ -183,7 +172,7 @@
 			form.value.direccion = auth.perfil.direccion
 		}
 
-		// 3) Si ya tengo región, cargo sus comunas
+		// 2) Si ya tengo región, cargo sus comunas
 		if (form.value.region_id) {
 			await loadComunas(form.value.region_id)
 		}
@@ -220,14 +209,6 @@
 		return 'NA'
 	})
 
-	const loadRegiones = async () => {
-		try {
-			regiones.value = await location.fetchRegiones()
-		} catch (e) {
-			console.error('Error cargando regiones:', e)
-		}
-	}
-
 	const loadComunas = async (regionId) => {
 		if (!regionId) {
 			comunas.value = []
@@ -252,8 +233,10 @@
 			const payload = { ...form.value }
 			await api.post('/perfil/update', payload)
 
-			// Si quieres refrescar perfil global
+			// 🔑 SINCRONIZAR STORE GLOBAL
 			await auth.fetchPerfil()
+
+			// Si quieres refrescar perfil global
 			alert.show('El perfil ha sido actualizado correctamente', 'success', true) // Alerta persistente para vista Perfil
 
 		} catch (error) {
@@ -270,5 +253,4 @@
 	}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

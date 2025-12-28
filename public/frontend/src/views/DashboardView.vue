@@ -151,13 +151,10 @@
 <script setup>
 	import { ref, onMounted } from "vue";
 	import { useAlertStore } from '@/stores/alert'
-
-	import axios from "axios";
+	import api from '@/services/api'
 
 	const alert = useAlertStore()
-
-	const panel = ref({
-						fecha_vigente_programa: "",
+	const panel = ref({	fecha_vigente_programa: "",
 						version_programa_diario: null,
 						totalKilosEstimados: 0,
 						desdeFecha: "12-07-1972",
@@ -170,22 +167,23 @@
 
 	onMounted(() => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
-
 		fetchPanelData()
 	})
 
 	async function fetchPanelData() {
 		try {
-			const response = await axios.get("/api/panel/datos");
+			const response = await api.get('/panel/datos')
 
-			if (response.data.status === "success") {
-				panel.value = response.data.data;
+			if (response.data?.status === 'success') {
+				panel.value = response.data.data
 			} else {
 				console.warn("Respuesta no exitosa:", response.data.message);
+				alert.show('No fue posible obtener datos del panel', 'warning')
 			}
 
 		} catch (error) {
-			console.error("Error al obtener datos del panel:", error);
+			console.error('Error al obtener datos del panel:', error)
+			alert.show('Error de conexión al cargar el panel', 'error')
 		}
 	}
 
