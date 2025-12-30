@@ -14,6 +14,15 @@ export const useAuthStore = defineStore('auth', {
 		error: null
 	}),
 
+	getters: {
+		/** ==========================
+		 * Existe una sesión local reanudable (user o perfil ya hidratados)
+		 *  ========================== */
+		hasLocalSession(state) {
+			return !!(state.user || state.perfil)
+		}
+	},
+
 	actions: {
 		/** ==========================
 		 *  LOAD OFFLINE CACHE PERFIL
@@ -53,6 +62,39 @@ export const useAuthStore = defineStore('auth', {
 			} catch (error) {
 				console.error('Error obteniendo CSRF cookie:', error)
 				throw error
+			}
+		},
+
+		/** ==========================
+		 *  RESUME SESION - Identidad persistida
+		 *  ========================== */
+		async resumeFromIdentity() {
+			const offlineIdentity = useOfflineIdentityStore()
+			const network = useNetworkStore()
+
+			offlineIdentity.loadFromStorage()
+
+			// No hay identidad → nada que hacer
+			if (!offlineIdentity.canResumeSession) {
+				return false
+			}
+
+			// OFFLINE → intentar perfil desde cache
+			if (!network.isOnline) {
+				const perfil = await this.loadPerfilFromCache()
+				if (perfil) {
+					return true
+				}
+				return false
+			}
+
+			// ONLINE → intentar rehidratar desde backend
+			try {
+				await this.fetchUser()
+				await this.fetchPerfil()
+				return !!this.user
+			} catch {
+				return false
 			}
 		},
 
@@ -239,7 +281,7 @@ export const useAuthStore = defineStore('auth', {
 		},
 
 		/** ==========================
-		 *  LOGOUT
+		 *  HARD-LOGOUT
 		 *  ========================== */
 		async logout() {
 			this.loading = true
@@ -260,6 +302,21 @@ export const useAuthStore = defineStore('auth', {
 				this.perfil = null
 				this.loading = false
 			}
+		},
+
+		/** ==========================
+		 *  SOFT-LOGOUT
+		 *  ========================== */
+		async softLogout() {
+			const offlineIdentity = useOfflineIdentityStore()
+
+			// Limpiar estado activo
+			this.user = null
+			this.perfil = null
+			this.error = null
+
+			// Mantener identidad offline
+			offlineIdentity.softClear()
 		},
 	}
 })

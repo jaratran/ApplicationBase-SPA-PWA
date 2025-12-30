@@ -29,19 +29,26 @@
 
 			<!-- Dropdown -->
 			<transition name="fade">
-			<div v-if="menuOpen"
-				class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 py-1 z-50">
+			<div v-if="menuOpen" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white border border-gray-200 py-1 z-50">
 				<button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2"
 					@click="goPerfil">
 					<i class="fas fa-user-circle text-gray-600"></i>
 					Mi Perfil
 				</button>
 
+				<button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2"
+					@click="softLogout">
+					<i class="fas fa-circle-pause text-gray-600"></i>
+					Salir (mantener sesión local)
+				</button>
+
+				<li class="dropdown-divider"></li>
+
 				<button
 					class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-					@click="logout">
+					@click="hardLogout">
 					<i class="fas fa-sign-out-alt"></i>
-					Cerrar Sesión
+					Cerrar sesión completamente
 				</button>
 			</div>
 			</transition>
@@ -100,12 +107,16 @@
         router.push('/perfil')
     }
 
-	const logout = async () => {
+	async function softLogout() {
 		menuOpen.value = false
-		const ok = await auth.logout()
+		await auth.softLogout()
+		router.replace('/session-entry')
+	}
 
-		// solo navegamos acá
-		router.push('/login')
+	async function hardLogout() {
+		menuOpen.value = false
+		await auth.logout()
+		router.replace('/login')
 	}
 </script>
 

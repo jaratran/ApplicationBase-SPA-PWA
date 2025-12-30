@@ -15,7 +15,7 @@ import PerfilView from '../views/Perfil/PerfilView.vue'
 import PerfilEditarView from '../views/Perfil/PerfilEditarView.vue'
 import PasswordView from '../views/Perfil/PasswordView.vue'
 
-import OfflineEntryView from '../views/OfflineEntryView.vue'
+import SessionEntryView from '../views/SessionEntryView.vue'
 
 // 🗺️ Definición de rutas
 const routes = [
@@ -80,11 +80,11 @@ const routes = [
 		meta: { requiresAuth: true, noPadding: true } // Agregamos variable que desactiva padding por defecto de las vistas logeadas
 	},
 
-	// Flujo de arranque OFFLINE (UI controlada)
+	// Flujo de arranque OFFLINE (UI controlada) y ONLINE con SESION PREVIA ACTIVA
 	{
-		path: '/offline-entry',
-		name: 'offline-entry',
-		component: OfflineEntryView,
+		path: '/session-entry',
+		name: 'session-entry',
+		component: SessionEntryView,
 		meta: { requiresAuth: false },
 	},
 
@@ -94,6 +94,8 @@ const routes = [
 		redirect: '/login'
 	},
 ]
+
+let sessionBootstrapped = false
 
 // ⚙️ Instancia del router
 const router = createRouter({
@@ -109,33 +111,58 @@ router.beforeEach(async (to) => {
 
 	offlineIdentity.loadFromStorage()
 
-	// 🚫 OFFLINE
-	if (!network.isOnline) {
-		// Si intenta ir a login o ruta pública
-		if (!to.meta.requiresAuth) {
-			if (!network.isOnline && offlineIdentity.isEnabled) {		// OFFLINE con identidad ...
-				if (to.path !== '/offline-entry') {
-					return '/offline-entry'								//  → forzar punto de entrada único
-				}
-			}
+	/* =====================================================
+	 * BOOTSTRAP ÚNICO DE SESIÓN (online u offline)
+	 *
+	 * NOTA:
+	 * - Soft logout NO destruye identidad
+	 * - Hard logout elimina identidad y obliga login
+	 * - /session-entry es el punto neutro de reentrada
+	 * ===================================================== */
+	if (!sessionBootstrapped) {
+		sessionBootstrapped = true
 
+		if (offlineIdentity.canResumeSession) {
+			const resumed = await auth.resumeFromIdentity()
+
+			// Si logró reanudar y va a login → redirigir
+			if (resumed && to.path === '/login') {
+				return '/dashboard'
+			}
+		}
+	}
+
+	/* =====================================================
+	 * 🚫 OFFLINE
+	 * ===================================================== */
+	if (!network.isOnline) {
+		// Rutas públicas
+		if (!to.meta.requiresAuth) {
+			if (offlineIdentity.canResumeSession && to.path !== '/session-entry') {
+				return '/session-entry'
+			}
 			return true
 		}
 
-		// Ruta protegida
-		if (offlineIdentity.isEnabled) {
+		// Rutas protegidas
+		if (offlineIdentity.canResumeSession) {
 			return true
 		}
 
 		return '/login'
 	}
 
-	// 🌐 ONLINE (comportamiento actual)
+	/* =====================================================
+	 * ONLINE (comportamiento normal)
+	 * ===================================================== */
 	if (to.meta.requiresAuth) {
 		if (!auth.user) await auth.fetchUser()
 		if (!auth.perfil) await auth.fetchPerfil()
+
 		if (!auth.user) return '/login'
 	}
+
+	return true
 })
 
 export default router
