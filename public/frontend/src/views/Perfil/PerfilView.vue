@@ -18,6 +18,12 @@
 
 							<hr class="my-3">
 
+							<!-- 🔔 Aviso offline para avatar -->
+							<div v-if="!network.isOnline" class="alert alert-info text-start mx-2">
+								<i class="fa fa-info-circle me-1"></i>
+								La actualización de la foto de perfil requiere conexión a internet.
+							</div>
+
 							<!-- Subir Avatar -->
 							<form @submit.prevent="submitAvatar">
 								<div class="form-group text-start px-2">
@@ -25,11 +31,12 @@
 
 									<!-- Input visible tal como EcoRuta -->
 									<input type="file" id="avatarFile" ref="fileInput" accept="image/*"
-										class="form-control" />
+										:disabled="!network.isOnline" class="form-control" />
 								</div>
 
 								<div class="text-center">
-									<button type="submit" class="btn btn-primary btn-full">
+									<button type="submit" class="btn btn-primary btn-full"
+										:disabled="!network.isOnline">
 										<i class="fa fa-refresh"></i> Actualizar Foto de Perfil
 									</button>
 								</div>
@@ -136,17 +143,16 @@
     import { useRouter } from 'vue-router'
 	import { useAlertStore } from '@/stores/alert'
     import { useAuthStore } from '@/stores/auth'
+	import { useNetworkStore } from '@/stores/network'
     import api from '@/services/api'
 
     const router = useRouter()
 	const alert = useAlertStore()
     const auth = useAuthStore()
+	const network = useNetworkStore()
 
 	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
-
-		// 1) Recuperar perfil
-		// await auth.fetchPerfil()
 	})
 
 	const avatarMedium = computed(() => {
