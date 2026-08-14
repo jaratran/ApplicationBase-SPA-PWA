@@ -49,10 +49,7 @@ export default defineConfig({
 	build: {
 		manifest: true,
 		outDir: 'build',            // → public/build
-		emptyOutDir: true,
-		rollupOptions: {
-			input: '/index.html'   // 👈 ENTRY REAL Y ÚNICO
-		}
+		emptyOutDir: true
 	},
 
 	/**
