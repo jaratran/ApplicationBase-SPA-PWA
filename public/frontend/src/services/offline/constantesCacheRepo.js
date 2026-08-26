@@ -8,7 +8,7 @@ export async function getCachedConstantes() {
 
 export async function setCachedConstantes(data) {
 	return kvSet(KEY, {
-		data,
+		data: JSON.parse(JSON.stringify(data)),
 		cachedAt: new Date().toISOString()
 	})
 }
