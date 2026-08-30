@@ -1,6 +1,6 @@
 import { kvGet, kvSet } from './db'
 
-const KEY = 'cache:dashboard:v1'
+const KEY = 'cache:dashboard:v2'
 
 export async function getCachedDashboard() {
 	return kvGet(KEY)

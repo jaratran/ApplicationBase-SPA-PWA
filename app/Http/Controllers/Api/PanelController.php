@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ProgramaDiario;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class PanelController extends Controller
@@ -17,34 +15,18 @@ class PanelController extends Controller
     public function datos(Request $request)
     {
         try {
-            $fechaFija = config('app.env_debug.dashboard_fecha_fija');
-
-            // $hoy = config('app.env') === 'local' && $fechaFija ? $fechaFija : now()->toDateString();
-            $hoy = $fechaFija ? $fechaFija : now()->toDateString();
-
-            $detallesPorVersion = ProgramaDiario::detallesPorFechaYVersion($hoy, config('constantes.VERSION_ULTIMA'));
-            $ultimaVersion      = array_key_first($detallesPorVersion);
-            $detalles           = $detallesPorVersion[$ultimaVersion] ?? collect();
-
-            $totalKilosEstimados = $detalles
-                ->filter(fn($detalle) => $detalle['estado'] !== config('constantes.ESTADO_RETIRO_CANCELADO'))
-                ->sum('kg_estimados');
-
-            $desde = Carbon::parse($hoy)->subDays(6)->toDateString();
-            $hasta = $hoy;
+            $hasta = now();
+            $desde = $hasta->copy()->subDays(6);
 
             $data = [
-                'fecha_vigente_programa'  => Carbon::parse($hoy)->format('d-m-Y'),
-                'version_programa_diario' => $ultimaVersion,
-                'totalKilosEstimados'     => $totalKilosEstimados,
-                'desdeFecha'              => Carbon::parse($desde)->format('d-m-Y'),
-                'hastaFecha'              => Carbon::parse($hasta)->format('d-m-Y'),
-                'tonsPorSucursal'         => ProgramaDiario::obtenerTonsPorSucursalHoy($hoy),
-                'planVsReal'              => ProgramaDiario::obtenerTonsPlanVsReal7Dias($desde, $hasta),
-                'kpiRcvrHoy'              => ProgramaDiario::obtenerKpiTonsHoy($hoy),
-                'kpiAcumPlan'             => ProgramaDiario::obtenerKpiAcumPlan7Dias($desde, $hasta),
-                'kpiAcumReal'             => ProgramaDiario::obtenerKpiAcumReal7Dias($desde, $hasta),
-                'detalles'                => $detalles,
+                'periodo' => [
+                    'desde' => $desde->format('d-m-Y'),
+                    'hasta' => $hasta->format('d-m-Y'),
+                ],
+                'kpiPrincipal'  => 0,
+                'kpiSecundario' => 0,
+                'kpiTerciario'  => 0,
+                'detalles'      => [],
             ];
 
             return response()->json([
