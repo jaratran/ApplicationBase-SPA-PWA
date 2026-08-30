@@ -90,10 +90,18 @@ export const useAuthStore = defineStore('auth', {
 
 			// ONLINE → intentar rehidratar desde backend
 			try {
-				await this.fetchUser()
+				await this.fetchUser({ throwOnTransportError: true })
 				await this.fetchPerfil()
 				return !!this.user
-			} catch {
+			} catch (error) {
+				// La verificación remota no pudo realizarse: decidir esta reanudación
+				// directamente desde cache, sin depender del estado global de red.
+				if (!error.response) {
+					const perfil = await this.loadPerfilFromCache()
+					network.setOffline()
+					return !!perfil
+				}
+
 				return false
 			}
 		},
@@ -151,7 +159,7 @@ export const useAuthStore = defineStore('auth', {
 		/** ==========================
 		 *  OBTENER USUARIO BÁSICO
 		 *  ========================== */
-		async fetchUser() {
+		async fetchUser({ throwOnTransportError = false } = {}) {
 			try {
 				const { data } = await api.get('/user')
 				this.user = data
@@ -159,6 +167,21 @@ export const useAuthStore = defineStore('auth', {
 
 			} catch (error) {
 				console.error('Error cargando usuario básico:', error)
+
+				// Sin respuesta no equivale a sesión rechazada: habilitar el flujo
+				// offline existente sin fabricar un usuario autenticado.
+				if (!error.response) {
+					const network = useNetworkStore()
+					network.setOffline()
+
+					if (throwOnTransportError) {
+						throw error
+					}
+
+					return null
+				}
+
+				// Una respuesta HTTP (incluidos 401/419) sí invalida el usuario remoto.
 				this.user = null
 				return null
 			}
