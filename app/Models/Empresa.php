@@ -57,12 +57,6 @@ class Empresa extends Model
         return $this->belongsTo(Comuna::class);                  // Una empresa pertenece a una comuna
     }
 
-    // Planificaciones donde esta empresa actúa como transportista
-    public function planificacionesComoTransportista()
-    {
-        return $this->hasMany(Planificacion::class, 'transportista_id');
-    }
-
     // Conductores asociados a ese transportista
     public function conductores()
     {

@@ -33,12 +33,4 @@ class Maquila extends Model
         return $this->belongsTo(Sucursal::class, 'sucursal_id');
     }
 
-    /**
-     * Solicitudes asociadas a esta maquila
-     */
-    public function solicitudes()
-    {
-        return $this->hasMany(Solicitud::class, 'maquila_id');
-    }
-
 }

@@ -56,9 +56,4 @@ class Camion extends Model
         return $this->belongsTo(Catalogo::class, 'tipo_camion_id', 'id');   // Un camión pertenece a un tipo de camión
     }
 
-    // Planificaciones asignadas a este camión
-    public function planificaciones()
-    {
-        return $this->hasMany(Planificacion::class, 'camion_id');
-    }
 }

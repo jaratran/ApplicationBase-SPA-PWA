@@ -90,12 +90,6 @@ class Conductor extends Model
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id');          // Un conductor es empleado por una empresa
     }
 
-    // Planificaciones asignadas a este conductor
-    public function planificaciones()
-    {
-        return $this->hasMany(Planificacion::class, 'conductor_id');
-    }
-
     /**
      * Todos los vínculos Telegram históricos
      */
