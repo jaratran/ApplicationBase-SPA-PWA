@@ -141,13 +141,4 @@ class Retiro extends Model
     {
         return $this->hasOne(Planificacion::class);
     }
-
-    /**
-     * Relación uno a muchos: cada retiro tiene muchos detalles de Programa Diario uno por cada versión emitida de Programa Diario.
-     */
-    public function detallesPrograma()
-    {
-        return $this->hasMany(ProgramaDiarioDetalle::class, 'retiro_id');
-    }
-
 }
