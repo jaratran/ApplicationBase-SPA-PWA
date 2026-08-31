@@ -14,9 +14,7 @@ class OperationalParameter extends Model
     protected $table = 'operational_parameters';
 
     protected $casts = [
-        'auto_emit_daily_program'       => 'boolean',
         'audit_email_enabled'           => 'boolean',
-        'notify_admins_as_coordinators' => 'boolean',
         'allow_profile_editing'         => 'boolean',
     ];
 
@@ -28,13 +26,9 @@ class OperationalParameter extends Model
     protected $fillable = [
         'support_email',
         'support_telefono',                   // 📌 Nuevo campo
-        'daily_program_execution_time',
-        'auto_emit_daily_program',
         'audit_email',
         'audit_email_enabled',
-        'notify_admins_as_coordinators',      // 📌 Nuevo campo
         'verification_expiration_time',       // 📌 Nuevo campo
         'allow_profile_editing',
-        'average_truck_speed',
     ];
 }
