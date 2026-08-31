@@ -1,6 +1,6 @@
 import { kvGet, kvSet } from './db'
 
-const KEY = 'cache:constantes:v1'
+const KEY = 'cache:constantes:v2'
 
 export async function getCachedConstantes() {
 	return kvGet(KEY)
