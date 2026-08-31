@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\ProgramaDiarioDetalle;
-
 class Planificacion extends Model
 {
     protected $table = 'planificaciones';
@@ -57,18 +55,6 @@ class Planificacion extends Model
             }
 
             $this->retiro->update($datos);
-        }
-    }
-
-    /**
-     * Método: Propaga el estado actual de la planificación a todos los registros
-     * de programa diario detalle que estén asociados al retiro correspondiente.
-     */
-    public function sincronizarEstadosDetallesProgramasDiarios(): void
-    {
-        if ($this->retiro && $this->estado_id) {
-            ProgramaDiarioDetalle::where('retiro_id', $this->retiro_id)
-                ->update(['estado' => $this->estado_id]);
         }
     }
 
