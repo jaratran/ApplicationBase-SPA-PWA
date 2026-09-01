@@ -53,22 +53,6 @@ return [
     'password_update_error'         => 'Error al actualizar la contraseña. Intenta nuevamente.',
     'unauthorized_profile_edit'     => 'No tienes permiso para editar el perfil de otro usuario.',
 
-    // Redirecciones en controlador CamiónController.php
-    'truck_created_successfully'    => 'Se ha creado el camión correctamente.',
-    'truck_creation_error'          => 'No se pudo crear el camión. Intenta nuevamente.',
-    'truck_updated_successfully'    => 'Se ha modificado el camión correctamente.',
-    'truck_update_error'            => 'No se pudo actualizar el camión. Intenta nuevamente.',
-    'truck_status_changed'          => 'El camión ha sido correctamente :status.',
-    'truck_status_change_error'     => 'No se pudo cambiar el estado del camión.',
-
-    // Redirecciones en controlador ConductorController.php
-    'driver_created_successfully'   => 'Se ha creado el conductor correctamente.',
-    'driver_creation_error'         => 'Ocurrió un error al intentar crear el conductor.',
-    'driver_updated_successfully'   => 'Se ha modificado el conductor correctamente.',
-    'driver_update_error'           => 'Ocurrió un error al intentar actualizar la información del conductor.',
-    'driver_status_changed'         => 'El conductor ha sido correctamente :status.',
-    'driver_status_change_error'    => 'No se pudo cambiar el estado del conductor.',
-
     // Redirecciones en controlador EmpresaController.php
     'company_created_successfully'            => 'Se ha creado la empresa correctamente.',
     'company_creation_error'                  => 'No se pudo crear la empresa. Por favor, revisa los datos e inténtalo nuevamente.',
@@ -93,9 +77,6 @@ return [
 
     // Subject de correo en notificador CustomResetPassword.php
     'password_reset_subject' => 'Restablecer contraseña en LaPortada',
-
-    // Subject de correo en notificador CustomVerifyWelcomeEmail.php
-    'welcome_email_subject' => '¡Bienvenid@ a EcoRuta el Sistema de Planificación de Retiro de Subproductos de La Portada!',
 
     // Redirecciones en middleware CheckRoleAccess.php
     'access_denied' => 'No tienes permisos para acceder a esta sección del sistema.',

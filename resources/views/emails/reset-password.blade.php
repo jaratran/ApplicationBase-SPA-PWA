@@ -40,7 +40,7 @@
                             <p style="margin-top: 40px;">Saludos cordiales,<br><strong>Equipo de La Portada</strong></p>
 
                             <hr>
-                            <p class="mb-0"><small>Este correo fue generado automáticamente por el Sistema de Planificación EcoRuta.</small></p>
+                            <p class="mb-0"><small>Este correo fue generado automáticamente. Por favor, no respondas a este mensaje.</small></p>
                         </td>
                     </tr>
                 </table>
