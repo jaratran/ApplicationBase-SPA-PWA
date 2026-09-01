@@ -25,13 +25,10 @@ class Sucursal extends Model
     protected $fillable = [
         'zona_id',
         'nombre_sucursal',
-        'codigo_siep',
         'tipo_sucursal_id',
         'comuna_id',
         'telefono',
         'email',
-        'km',
-        'tiempo_estimado_viaje',
         'activo',
         'observacion_inactividad',
     ];
