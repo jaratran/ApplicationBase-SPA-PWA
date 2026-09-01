@@ -143,13 +143,16 @@
     import { useRouter } from 'vue-router'
 	import { useAlertStore } from '@/stores/alert'
     import { useAuthStore } from '@/stores/auth'
+	import { useConstantesStore } from '@/stores/constantes'
 	import { useNetworkStore } from '@/stores/network'
     import api from '@/services/api'
 
     const router = useRouter()
 	const alert = useAlertStore()
     const auth = useAuthStore()
+	const constantesStore = useConstantesStore()
 	const network = useNetworkStore()
+	const constantes = computed(() => constantesStore.data ?? {})
 
 	onMounted(async () => {
 		alert.prepare()														// Mostrar o limpiar alert si (pendiente/persistente)
@@ -162,11 +165,11 @@
 	})
 
 	const empresaSucursal = computed(() => {
-		if (!auth.perfil) return ''
+		if (!auth.perfil || !constantes.value) return ''
 		const u = auth.perfil
 
-        if (u.rol_id === 4) return u.sucursal?.nombre_sucursal ?? '-'
-        if (u.rol_id === 5) return u.empresa?.razon_social ?? '-'
+        if (u.rol_id === constantes.value.ROL_SOLICITANTE_PLANTA) return u.sucursal?.nombre_sucursal ?? '-'
+        if (u.rol_id === constantes.value.ROL_SOLICITANTE_PRODUCTOR) return u.empresa?.razon_social ?? '-'
 
         return 'NA'
     })
