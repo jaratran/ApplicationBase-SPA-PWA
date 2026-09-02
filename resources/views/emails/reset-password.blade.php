@@ -5,6 +5,7 @@
     <title>Restablecer Contraseña</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; color: #333;">
+    @php($primaryColor = $designParameter?->custom_primary ?: '#004aad')
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td align="center">
@@ -12,14 +13,14 @@
                     <tr>
                         <td>
                             <!--
-                                <img 
-                                    src="{{ asset('config/' . $designParameter->emblema_design) }}" 
-                                    alt="Emblema {{ $designParameter->titulo_design }}" 
+                                <img
+                                    src="{{ asset('config/' . $designParameter?->emblema_design) }}"
+                                    alt="Emblema {{ $designParameter?->titulo_design }}"
                                     style="max-width:180px; max-height:120px; display:block; margin-bottom:20px;"
                                 >
                             -->
 
-                            <h2 style="color: {{ $designParameter->custom_primary }};">
+                            <h2 style="color: {{ $primaryColor }};">
                                 Restablecimiento de Contraseña <strong>La Portada</strong>
                             </h2>
                             <p>Estimado/a <strong>{{ $user->nombre_usuario }} {{ $user->apellidos_usuario }}</strong>,</p>
@@ -28,14 +29,22 @@
 
                             <p>Haz clic en el botón para definir una nueva:</p>
                             <p>
-                                <a href="{{ $resetUrl  }}" style="display: inline-block; padding: 10px 20px; background-color: {{ $designParameter->custom_primary }}; color: white; text-decoration: none; border-radius: 5px;">
+                                <a href="{{ $resetUrl  }}" style="display: inline-block; padding: 10px 20px; background-color: {{ $primaryColor }}; color: white; text-decoration: none; border-radius: 5px;">
                                     Definir nueva contraseña
                                 </a>
                             </p>
 
                             <p>Si no realizaste esta solicitud, puedes ignorar este mensaje.</p>
 
-                            <p>Si tienes alguna duda o necesitas asistencia, no dudes en comunicarte con nuestro equipo de soporte al correo <strong>{{ $operationalParameter->support_email }}</strong> o al teléfono <strong>{{ $operationalParameter->support_telefono }}</strong>.
+                            @if ($operationalParameter?->support_email || $operationalParameter?->support_telefono)
+                                <p>Si tienes alguna duda o necesitas asistencia, comunícate con nuestro equipo de soporte.</p>
+                                @if ($operationalParameter?->support_email)
+                                    <p>Correo: <strong>{{ $operationalParameter->support_email }}</strong></p>
+                                @endif
+                                @if ($operationalParameter?->support_telefono)
+                                    <p>Teléfono: <strong>{{ $operationalParameter->support_telefono }}</strong></p>
+                                @endif
+                            @endif
 
                             <p style="margin-top: 40px;">Saludos cordiales,<br><strong>Equipo de La Portada</strong></p>
 
