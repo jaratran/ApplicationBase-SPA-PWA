@@ -1,5 +1,7 @@
 ﻿# Migrations activas
 
-Este directorio está reservado para las migrations operativas actuales de ApplicationBase. El historial heredado y las podas ya ejecutadas se conservan en `database/migration-history` y no deben reintroducirse aquí.
+Este directorio contiene las migrations constitutivas del baseline de ApplicationBase. El historial heredado y las podas ya ejecutadas se conservan en `database/migration-history` y no deben reintroducirse aquí.
 
-Las migrations constitutivas del baseline se incorporarán en la siguiente intervención. Durante este estado transitorio, ApplicationBase todavía no puede reconstruir su schema desde cero.
+El baseline comenzó con el bloque framework/auth. Estas migrations pueden crear su bloque o adoptar explícitamente un schema existente compatible; la adopción siempre requiere opt-in y coincidencia exacta del nombre de la base de datos.
+
+Las migrations del baseline son deliberadamente irreversibles.
