@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 
 use App\Http\Controllers\Api\PanelController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\Admin\AdminContextController;
 
 use App\Http\Controllers\Api\Parametros\CatalogoController;
 use App\Http\Controllers\Api\Parametros\LocationController;
@@ -27,6 +28,9 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 
 // Rutas protegidas por Sanctum y el nuevo middleware (para manejar LogOut sin LogIn)
 Route::middleware(['auth:sanctum'])->group(function () {
+	Route::get('/admin/context', AdminContextController::class)
+		->middleware('can:access-administration');
+
 	Route::get('/constantes', [CatalogoController::class, 'index']);
 
 	Route::get('/regiones', [LocationController::class, 'obtenerRegion']);
